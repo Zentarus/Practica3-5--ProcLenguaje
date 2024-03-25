@@ -114,6 +114,7 @@ TOKEN : { // Tipos
 |	< tCHAR: "char" >
 |	< tCHARACTER: "character" >
 |   < tINTEGER: "integer" >
+|	< tSTRING: "string" >
 |	< tNULL: "null" >
 |	< tARRAY: "array" >
 |	< tCONST_INT: (["0"-"9"])+ >
