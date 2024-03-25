@@ -17,14 +17,55 @@ PARSER_BEGIN(alike)
 
 package traductor;
 
+import lib.symbolTable.*;
+import lib.symbolTable.exceptions.*;
+
 //...
 
 public class alike {
    //...
+
+   static SymbolTable st;
+
+	private static void initSymbolTable() {
+		boolean b;
+		String[] palsRes = {
+	    	"boolean","char","character", "integer", "null", "array",  
+			"mod", "not", "and", "or",
+			"if", "elsif", "else", "then", "while", "loop", "true", "false",
+			"procedure", "function", "is", "ref", "of", "begin", "end", "return",
+			"skip_line", "put", "put_line", "get", "char2int", "int2char"
+		};
+
+		//st.insertReservedWords(palsRes);
+	}
+
+	private void iterarYanadirEnTablaDeSimbolos(ArrayList<Token> ids, Attributes at){
+		for (Token t : ids) {
+			if (at.type == Symbol.types.BOOL) {
+				s = new SymbolBool(t.image);
+				st.insertSymbol(s);		}
+			else if (at.type == Symbol.types.INT) {
+				s = new SymbolInt(t.image);
+				st.insertSymbol(s);(ids);
+			}
+			else if (at.type == Symbol.types.CHAR) {
+				s = new SymbolChar(t.image);
+				st.insertSymbol(s);(ids);
+			}
+			else if (at.type == Symbol.type.ARRAY) {
+				s = new SymbolArray(t.image);
+				st.insertSymbol(s);(ids);
+			} 
+		}
+	}
    
    public static void main(String[] args) {
 	   alike parser = null;
 	   
+		st = new SymbolTable();
+    	initSymbolTable();
+
 	   try {
 		   if(args.length == 0) {
 			   parser = new alike(System.in);
@@ -199,7 +240,7 @@ void Programa() :
 	<tPROCEDURE>
 	<tID>
 	<tIS>
-	( declaracion_variables_puntocoma() )?
+	( declaracion_variables() )?
 	( declaracion_procs_funcs() )?
 	<tBEGIN>
 	instrucciones()
@@ -229,10 +270,10 @@ void declaracion_func():
 
 }
 {
-	cabecera_funcion()
-	( declaracion_variables_puntocoma() )?
+	cabecera_funcion() {st.insertBlock();}
+	( declaracion_variables() )?
 	<tBEGIN>
-	instrucciones() // instrucciones() ENGLOBA EL RETURN, PARA ESTA SI SIRVE
+	instrucciones() 
 	<tEND>
 	<tPUNTOCOMA>
 }
@@ -242,21 +283,22 @@ void declaracion_proc():
 
 }
 {
-	cabecera_procedimiento() 
-	( declaracion_variables_puntocoma() )?
+	cabecera_procedimiento() {st.insertBlock();}
+	( declaracion_variables() )?
 	<tBEGIN>
-	instrucciones() // INSTRUCCIONES ENGLOBA EL 'RETURN', QUIZAS HAY QUE DIFERENCIAR instrucciones() CON Y SIN RETURN 
-					// PARA declaracion_proc(), USAR 'RETURN' ESTARÍA DE MOMENTO MAL, SOLO SIRVE PARA declaracion_func()
+	instrucciones() 
 	<tEND>
 	<tPUNTOCOMA>
 }
 
-void lista_ids():
+ArrayList<Token> lista_ids():
 {
-
+	ArrayList<Token> ids;
+	Token t;
 }
 {
-	<tID> (<tCOMA> <tID>)*  //Aceptamos que una lista de ids pueda estar formada por un solo id
+
+	t = <tID> {ids.add(t);} (<tCOMA> t = <tID> {ids.add(t);})*  //Aceptamos que una lista de ids pueda estar formada por un solo id
 }
 
 void declaracion_variables() :
@@ -275,12 +317,15 @@ void declaracion_variables_puntocoma() :
 	( declaracion_var_puntocoma() )+
 }
 		
-void tipo_variable() :
+void tipo_variable(Attributes at) :
 {
 
 }
 {
-	<tBOOL> | <tCHAR> | <tCHARACTER> | <tINTEGER> 
+	<tBOOL> { at.type = Symbol.Types.BOOL; }
+| 	<tCHAR> { at.type = Symbol.Types.CHAR; }
+| 	<tCHARACTER> { at.type = Symbol.Types.CHAR; }
+| 	<tINTEGER> { at.type = Symbol.Types.INT; }
 	
 }
 
@@ -292,35 +337,38 @@ void rango() :
 	<tCONST_INT> <tDOSPUNTOS> <tCONST_INT>
 }
 
-void estructura_array():
+Type estructura_array(Attributes at):
 {
 
 }
 {
-	<tARRAY> <tPARENTESIS_OPEN> rango() <tPARENTESIS_CLOSE> <tOF> tipo_variable()
+	<tARRAY> <tPARENTESIS_OPEN> rango() <tPARENTESIS_CLOSE> <tOF> tipo_variable(at)
 }
 
 void declaracion_var_puntocoma():
 {
-	
+	ArrayList<Token> ids;
+	Attributes at1 = new Attributes(), at2 = new Attributes();
 }
 {
-	lista_ids() 
+	ids = lista_ids() 
 	<tDOBLEPUNTO>
 	(<tREF>)?
-	( tipo_variable() | estructura_array())
-	(<tPUNTOCOMA>)?
+	( tipo_variable(at1) { iterarYanadirEnTablaDeSimbolos(ids,at1);	} | 	
+	  estructura_array(at2) { iterarYanadirEnTablaDeSimbolos(ids,at2); })
 }
 
 void declaracion_var():
 {
-	
+	ArrayList<Token> ids;
+	Attributes at1 = new Attributes(), at2 = new Attributes();
 }
 {
-	lista_ids() 
+	ids = lista_ids() 
 	<tDOBLEPUNTO>
-	(<tREF>)?
-	( tipo_variable() | estructura_array())
+	( tipo_variable(at1) { iterarYanadirEnTablaDeSimbolos(ids,at1);	} | 	
+	  estructura_array(at2) { iterarYanadirEnTablaDeSimbolos(ids,at2); })
+	<tPUNTOCOMA>
 }
 
 void lista_parametros_funcion_o_proc():
@@ -328,42 +376,59 @@ void lista_parametros_funcion_o_proc():
 
 }
 {
-	declaracion_var() (<tPUNTOCOMA> declaracion_var())*	
+	declaracion_var_puntocoma() (<tPUNTOCOMA> declaracion_var_puntocoma())*	
 }
 
-void cabecera_procedimiento() :
+void cabecera_procedimiento(Attributes at) :
 {
-	
+	Token t;
+	Attributes at1 = new Attributes(), at2 = new Attributes();
 }
 {
 	<tPROCEDURE>
-	<tID>
+	t = <tID> {
+		at.parList = new ArrayList<Symbol>();
+		s = new SymbolFunction(t.image,at.parList,at1.type);
+		try {
+			st.insertSymbol(s);	
+		}
+		catch (AlreadyDefinedSymbolException e) {
+			//error
+		}
+		st.insertBlock();
+		at2.parList = at1.parList;
+	}
 	<tPARENTESIS_OPEN>
-	( lista_parametros_funcion_o_proc() )?
+	( lista_parametros_funcion_o_proc(at2) )?
 	<tPARENTESIS_CLOSE>
-	<tIS>
+	<tIS> {at.type = at1.type;}
 }
 
-void cabecera_funcion() :
+void cabecera_funcion(Attributes at) :
 {
-	
+
+	Token t;
+	Attributes at1 = new Attributes(), at2 = new Attributes();
+
 }
 {
 	<tFUNCTION> 
-	<tID>
+	t = <tID> {
+		at.parList = new ArrayList<Symbol>();
+		s = new SymbolFunction(t.image, at.parList, at1.type);
+		try {
+			st.insertSymbol(s);
+		}
+		catch (AlreadyDefinedSymbolException e) {
+			// error
+		}
+		st.insertBlock();
+		at2.parList = at.parList;
+	}
 	<tPARENTESIS_OPEN>
-	( lista_parametros_funcion_o_proc() )?
+	( lista_parametros_funcion_o_proc(at2) )?
 	<tPARENTESIS_CLOSE>
-	<tRETURN> tipo_variable() <tIS>
-}
-
-void llamada_funcion():
-{
-
-}
-{
-	LOOKAHEAD(2)
-	<tID> <tPARENTESIS_OPEN> (lista_ids() | lista_una_o_mas_exps())* <tPARENTESIS_CLOSE>
+	<tRETURN> tipo_variable(at1) <tIS> {at.type = at1.type; }
 }
 
 void inst_leer():
@@ -382,35 +447,34 @@ void inst_saltar_linea():
 	<tSKIP_LN>
 }
 
-void inst_escribir(): //HE PUESTO QUE PUEDAS ESCRIBIR EL RESULTADO DE CUALQUIER FUNCION PERO IGUAL ES SOLO EL DE INT2CHAR(K)
+void inst_escribir():
 {
 
 }
 {
 	<tPUT> <tPARENTESIS_OPEN>
-	((LOOKAHEAD(<tID> <tPARENTESIS_OPEN>) llamada_funcion() | <tCONST_STRING> | <tCONST_CHAR> | lista_ids()) <tCOMA>)* (LOOKAHEAD(<tID> <tPARENTESIS_OPEN>) llamada_funcion() | <tCONST_STRING> | <tCONST_CHAR> | lista_ids())
+	lista_una_o_mas_exps()
 	<tPARENTESIS_CLOSE>
 }
 
-void inst_escribir_linea(): //HE PUESTO QUE PUEDAS ESCRIBIR EL RESULTADO DE CUALQUIER FUNCION PERO IGUAL ES SOLO EL DE INT2CHAR(K)
+void inst_escribir_linea(): 
 {
 
 }
 {
-	<tPUT_LN> <tPARENTESIS_OPEN> 
-	//LOOKAHEAD( ( "abstract" | "final" | "public" )*)
-	((LOOKAHEAD(<tID> <tPARENTESIS_OPEN>) llamada_funcion() | <tCONST_STRING> | <tCONST_CHAR> | lista_ids()) <tCOMA>)* (LOOKAHEAD(<tID> <tPARENTESIS_OPEN>) llamada_funcion() | <tCONST_STRING> | <tCONST_CHAR> | lista_ids())
-	<tPARENTESIS_CLOSE>
+	<tPUT_LN> 
+	(<tPARENTESIS_OPEN> 
+	lista_una_o_mas_exps()
+	<tPARENTESIS_CLOSE>) ?
 }
 
-void inst_invocacion_o_asignacion(): 
+void inst_invocacion_o_asignacion(Attributes at): 
 {
-
+	Token t;
+	Attributes at1 = new Attributes(), at2 = new Attributes();
 }
 {
-	LOOKAHEAD(2)
-	llamada_funcion() |	
-	<tID> <tASIGN> (<tCONST_CHAR> | <tCONST_INT> | <tCONST_STRING> | expresion())
+	expresion() (<tASIGN> expresion()) ? // Completar parte de práctica 3
 
 }
 
@@ -422,7 +486,7 @@ void inst_if():
 	<tIF> expresion() <tTHEN> instrucciones()
 	(<tELIF>  expresion() <tTHEN> instrucciones())*
 	(<tELSE> instrucciones())?
-	LOOKAHEAD(<tEND> <tIF>)
+	<tEND> <tIF>
 	
 }
 
@@ -441,7 +505,7 @@ void inst_return():
 
 }
 {
-	<tRETURN> (<tID> | <tCONST_CHAR> | <tCONST_INT> | <tCONST_STRING>)
+	<tRETURN> expresion()
 }
 
 void inst_null():
@@ -494,20 +558,39 @@ void lista_una_o_mas_exps():
 	
 }
 
-void relacion() :
+void relacion(Attibutes at) :
 {
-	
+	Token t;
+	Attributes at1 = new Attributes(), at2 = new Attributes(), at3 = new Attributes();
 }
 {
-	expresion_simple()
-	( operador_relacional() expresion_simple() )?
+	expresion_simple(at1) 
+	{
+		at.type = at1.type;
+		at.parClass = at1.parClass;
+		at.parList = at1.parList;
+	}
+	( 
+	operador_relacional(at2) 
+	expresion_simple(at3) 
+	{
+		if (at1.type == at3.type) {
+			at.type = Symbol.Types.BOOL;
+		}
+		else {
+			at.type = Symbol.Types.UNDEFINED;
+			//error, no devolverá booleano si no se puede comparar
+		}
+		//completar los atributos de at
+	} 
+	)?
 }
 	
 	
 
-void operador_relacional() :
+void operador_relacional(Attributes at) :
 {
-
+	
 }
 {
 	<tEQU> | <tLT> | <tGT> | <tLE> | <tGE> | <tDIF>
@@ -548,12 +631,13 @@ void factor() :
 
 }
 {
-	primario()
-|   <tNOT>  primario()
+	primario() 
+|	<tNOT> primario() 
+
 }
 	
 
-void primario() :
+void primario(Atributos at) :
 {
 
 }
@@ -561,8 +645,33 @@ void primario() :
 	<tPARENTESIS_OPEN> expresion() <tPARENTESIS_CLOSE>
 |	<tINT2CHAR> <tPARENTESIS_OPEN> expresion() <tPARENTESIS_CLOSE>
 |	<tCHAR2INT> <tPARENTESIS_OPEN> expresion() <tPARENTESIS_CLOSE>
-|	LOOKAHEAD(2) <tID> <tPARENTESIS_OPEN> lista_una_o_mas_exps() <tPARENTESIS_CLOSE> //invoc. func. o comp. array
-|	<tID>              //var. o func. sin pars
+|	LOOKAHEAD(2) <tID> <tPARENTESIS_OPEN> lista_una_o_mas_exps() <tPARENTESIS_CLOSE> { //invoc. func. o comp. array
+		Symbol s = null;
+		try {
+			s = st.getSymbol(t.image);
+			if (!(s instanceof SymbolFunction)) {
+				errSem.deteccion("Se esperaba función ...");
+			}
+		}
+		catch (SymbolNotFoundException e) {
+			errSem.deteccion(e, t);
+		}
+		at.isVar = false;
+		at.type = ((SymbolFunction)s).returnType;
+		// Procesar la lista de parametros reales ...
+		...
+	}
+|	t = <tID> {             //var. o func. sin pars
+		Symbol s = null;
+		try {
+			s = st.getSymbol(t.image);
+		}
+		catch (SymbolNotFoundException e) {
+			errSem.deteccion(e, t);
+		}
+		at.isVar = true;
+		at.type = s.type;
+	}
 |	<tCONST_INT>
 |	<tCONST_CHAR>
 |	<tCONST_STRING> //rn sf.primario_8(t);
