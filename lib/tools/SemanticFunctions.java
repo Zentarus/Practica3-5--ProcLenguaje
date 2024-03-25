@@ -7,21 +7,21 @@
 // Asignatura: Procesadores de Lenguajes, curso 2021-2022
 //*****************************************************************
 
-package lib.tools.SemanticFunctions;
+package lib.tools;
 
 import java.util.*;
-import traductor.Token;
-import lib.attributes.*;
+import traductor.*;
+//import lib.attributes.*;
 import lib.symbolTable.*;
 import lib.symbolTable.exceptions.*;
 import lib.errores.*;
 
 public class SemanticFunctions {
-	private ErrorSemantico errSem; //clase común de errores semánticos
+	private ErrorSemantico errSem; // clase común de errores semánticos
 
 	public SemanticFunctions() {
 		errSem = new ErrorSemantico();
 	}
 
-	//COMPLETAR
+	// COMPLETAR
 }
