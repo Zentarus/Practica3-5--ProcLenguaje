@@ -14,8 +14,8 @@ public class Attributes implements Cloneable {
     public Attributes() {
         type = Symbol.Types.UNDEFINED;
         parClass = Symbol.ParameterClass.VAL;
-        parList = null;
-        intList = null;
+        parList = new ArrayList<Symbol>();
+        intList = new ArrayList<Integer>();
         isArray = false;
         isVar = false;
 

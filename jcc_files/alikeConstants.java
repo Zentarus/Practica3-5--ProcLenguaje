@@ -35,109 +35,111 @@ public interface alikeConstants {
   /** RegularExpression Id. */
   int tINTEGER = 12;
   /** RegularExpression Id. */
-  int tNULL = 13;
+  int tSTRING = 13;
   /** RegularExpression Id. */
-  int tARRAY = 14;
+  int tNULL = 14;
   /** RegularExpression Id. */
-  int tCONST_INT = 15;
+  int tARRAY = 15;
   /** RegularExpression Id. */
-  int tCONST_CHAR = 16;
+  int tCONST_INT = 16;
   /** RegularExpression Id. */
-  int tCONST_STRING = 17;
+  int tCONST_CHAR = 17;
   /** RegularExpression Id. */
-  int tASIGN = 18;
+  int tCONST_STRING = 18;
   /** RegularExpression Id. */
-  int tSUM = 19;
+  int tASIGN = 19;
   /** RegularExpression Id. */
-  int tRES = 20;
+  int tSUM = 20;
   /** RegularExpression Id. */
-  int tEQU = 21;
+  int tRES = 21;
   /** RegularExpression Id. */
-  int tGT = 22;
+  int tEQU = 22;
   /** RegularExpression Id. */
-  int tLT = 23;
+  int tGT = 23;
   /** RegularExpression Id. */
-  int tGE = 24;
+  int tLT = 24;
   /** RegularExpression Id. */
-  int tLE = 25;
+  int tGE = 25;
   /** RegularExpression Id. */
-  int tDIF = 26;
+  int tLE = 26;
   /** RegularExpression Id. */
-  int tMUL = 27;
+  int tDIF = 27;
   /** RegularExpression Id. */
-  int tMOD = 28;
+  int tMUL = 28;
   /** RegularExpression Id. */
-  int tDIV = 29;
+  int tMOD = 29;
   /** RegularExpression Id. */
-  int tNOT = 30;
+  int tDIV = 30;
   /** RegularExpression Id. */
-  int tAND = 31;
+  int tNOT = 31;
   /** RegularExpression Id. */
-  int tOR = 32;
+  int tAND = 32;
   /** RegularExpression Id. */
-  int tIF = 33;
+  int tOR = 33;
   /** RegularExpression Id. */
-  int tELIF = 34;
+  int tIF = 34;
   /** RegularExpression Id. */
-  int tELSE = 35;
+  int tELIF = 35;
   /** RegularExpression Id. */
-  int tTHEN = 36;
+  int tELSE = 36;
   /** RegularExpression Id. */
-  int tWHILE = 37;
+  int tTHEN = 37;
   /** RegularExpression Id. */
-  int tLOOP = 38;
+  int tWHILE = 38;
   /** RegularExpression Id. */
-  int tTRUE = 39;
+  int tLOOP = 39;
   /** RegularExpression Id. */
-  int tFALSE = 40;
+  int tTRUE = 40;
   /** RegularExpression Id. */
-  int tPROCEDURE = 41;
+  int tFALSE = 41;
   /** RegularExpression Id. */
-  int tFUNCTION = 42;
+  int tPROCEDURE = 42;
   /** RegularExpression Id. */
-  int tIS = 43;
+  int tFUNCTION = 43;
   /** RegularExpression Id. */
-  int tREF = 44;
+  int tIS = 44;
   /** RegularExpression Id. */
-  int tOF = 45;
+  int tREF = 45;
   /** RegularExpression Id. */
-  int tBEGIN = 46;
+  int tOF = 46;
   /** RegularExpression Id. */
-  int tEND = 47;
+  int tBEGIN = 47;
   /** RegularExpression Id. */
-  int tRETURN = 48;
+  int tEND = 48;
   /** RegularExpression Id. */
-  int tSKIP_LN = 49;
+  int tRETURN = 49;
   /** RegularExpression Id. */
-  int tPUT = 50;
+  int tSKIP_LN = 50;
   /** RegularExpression Id. */
-  int tPUT_LN = 51;
+  int tPUT = 51;
   /** RegularExpression Id. */
-  int tGET = 52;
+  int tPUT_LN = 52;
   /** RegularExpression Id. */
-  int tCHAR2INT = 53;
+  int tGET = 53;
   /** RegularExpression Id. */
-  int tINT2CHAR = 54;
+  int tCHAR2INT = 54;
   /** RegularExpression Id. */
-  int tPUNTO = 55;
+  int tINT2CHAR = 55;
   /** RegularExpression Id. */
-  int tCOMA = 56;
+  int tPUNTO = 56;
   /** RegularExpression Id. */
-  int tDOSPUNTOS = 57;
+  int tCOMA = 57;
   /** RegularExpression Id. */
-  int tDOBLEPUNTO = 58;
+  int tDOSPUNTOS = 58;
   /** RegularExpression Id. */
-  int tPUNTOCOMA = 59;
+  int tDOBLEPUNTO = 59;
   /** RegularExpression Id. */
-  int tCORCHETES_OPEN = 60;
+  int tPUNTOCOMA = 60;
   /** RegularExpression Id. */
-  int tCORCHETES_CLOSE = 61;
+  int tCORCHETES_OPEN = 61;
   /** RegularExpression Id. */
-  int tPARENTESIS_OPEN = 62;
+  int tCORCHETES_CLOSE = 62;
   /** RegularExpression Id. */
-  int tPARENTESIS_CLOSE = 63;
+  int tPARENTESIS_OPEN = 63;
   /** RegularExpression Id. */
-  int tID = 64;
+  int tPARENTESIS_CLOSE = 64;
+  /** RegularExpression Id. */
+  int tID = 65;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -157,6 +159,7 @@ public interface alikeConstants {
     "\"char\"",
     "\"character\"",
     "\"integer\"",
+    "\"string\"",
     "\"null\"",
     "\"array\"",
     "<tCONST_INT>",

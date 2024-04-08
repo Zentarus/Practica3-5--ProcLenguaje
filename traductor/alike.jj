@@ -47,16 +47,20 @@ public class alike {
 		for (Token t : ids) {
 			if (at.isArray) {
 				s = new SymbolArray(t.image, at.intList.get(0), at.intList.get(1), at.type);
+				at.parList.add(s);
 			}
 			else {
 				if (at.type == Symbol.Types.BOOL) {
 					s = new SymbolBool(t.image);
+					at.parList.add(s);
 				}
 				else if (at.type == Symbol.Types.INT) {
 					s = new SymbolInt(t.image);
+					at.parList.add(s);
 				}
 				else if (at.type == Symbol.Types.CHAR) {
 					s = new SymbolChar(t.image);
+					at.parList.add(s);
 				}
 			}
 			try {
@@ -243,11 +247,23 @@ TOKEN_MGR_DECLS : {
  
 void Programa() : 
 {
-
+	Token t;
+	Attributes at = new Attributes();
+	
 }
 {
 	<tPROCEDURE>
-	<tID>
+	t = <tID> {
+		Symbol s;
+		at.parList = new ArrayList<Symbol>();
+		s = new SymbolProcedure(t.image,at.parList);
+		try {
+			st.insertSymbol(s);	
+		}
+		catch (AlreadyDefinedSymbolException e) {
+			//error
+		}
+	}
 	<tIS>
 	( declaracion_variables() )?
 	( declaracion_procs_funcs() )?
@@ -279,7 +295,7 @@ void declaracion_func():
 	Attributes at = new Attributes();
 }
 {
-	cabecera_funcion(at) {st.insertBlock();}
+	cabecera_funcion(at)
 	( declaracion_variables() )?
 	<tBEGIN>
 	instrucciones() 
@@ -296,7 +312,7 @@ void declaracion_proc():
 	Attributes at = new Attributes();
 }
 {
-	cabecera_procedimiento(at) {st.insertBlock();}
+	cabecera_procedimiento(at)
 	( declaracion_variables() )?
 	<tBEGIN>
 	instrucciones() 
@@ -329,10 +345,10 @@ void declaracion_variables() :
 
 void declaracion_variables_puntocoma() :
 {
-
+	Attributes at = new Attributes();
 }
 {
-	( declaracion_var_puntocoma() )+
+	( declaracion_var_puntocoma(at) )+
 }
 		
 void tipo_variable(Attributes at) :
@@ -377,17 +393,28 @@ void estructura_array(Attributes at):
 	}
 }
 
-void declaracion_var_puntocoma():
+void declaracion_var_puntocoma(Attributes at):
 {
 	ArrayList<Token> ids;
 	Attributes at1 = new Attributes(), at2 = new Attributes();
+	Symbol s;
 }
 {
 	ids = lista_ids() 
 	<tDOBLEPUNTO>
 	(<tREF>)?
-	( tipo_variable(at1) { iterarYanadirEnTablaDeSimbolos(ids,at1);	} | 	
-	  estructura_array(at2) { iterarYanadirEnTablaDeSimbolos(ids,at2); })
+	( tipo_variable(at1) 
+	{ 
+		iterarYanadirEnTablaDeSimbolos(ids,at1);
+		at.parList = at2.parList;
+	} 
+| 	
+  	estructura_array(at2) 
+	{ 
+		iterarYanadirEnTablaDeSimbolos(ids,at2); 
+		at.parList = at2.parList;
+	}
+	)
 }
 
 void declaracion_var():
@@ -408,7 +435,7 @@ void lista_parametros_funcion_o_proc(Attributes at):
 
 }
 {
-	declaracion_var_puntocoma() (<tPUNTOCOMA> declaracion_var_puntocoma())*	
+	declaracion_var_puntocoma(at) (<tPUNTOCOMA> declaracion_var_puntocoma(at))*	
 }
 
 void cabecera_procedimiento(Attributes at) :
@@ -421,20 +448,30 @@ void cabecera_procedimiento(Attributes at) :
 	t = <tID> {
 		Symbol s;
 		at.parList = new ArrayList<Symbol>();
-		s = new SymbolFunction(t.image,at.parList,at1.type);
+		s = new SymbolProcedure(t.image,at.parList);
 		try {
 			st.insertSymbol(s);	
+			st.insertBlock();
 		}
 		catch (AlreadyDefinedSymbolException e) {
 			//error
 		}
-		st.insertBlock();
+		
 		at2.parList = at1.parList;
 	}
 	<tPARENTESIS_OPEN>
-	( lista_parametros_funcion_o_proc(at2) )?
+	(( lista_parametros_funcion_o_proc(at2) )?)
+	{
+		Symbol aux = st.getSymbol(t.image);
+		if (aux instanceof SymbolProcedure) {
+			System.err.println("Procedimiento");
+			SymbolProcedure procedure = (SymbolProcedure) aux;
+			procedure.parList = at2.parList;
+		}
+		
+	}
 	<tPARENTESIS_CLOSE>
-	<tIS> {at.type = at1.type;}
+	<tIS>
 }
 
 void cabecera_funcion(Attributes at) :
@@ -452,17 +489,28 @@ void cabecera_funcion(Attributes at) :
 		s = new SymbolFunction(t.image, at.parList, at1.type);
 		try {
 			st.insertSymbol(s);
+			st.insertBlock();
 		}
 		catch (AlreadyDefinedSymbolException e) {
 			// error
 		}
-		st.insertBlock();
 		at2.parList = at.parList;
 	}
 	<tPARENTESIS_OPEN>
 	( lista_parametros_funcion_o_proc(at2) )?
 	<tPARENTESIS_CLOSE>
-	<tRETURN> tipo_variable(at1) <tIS> {at.type = at1.type; }
+	<tRETURN> tipo_variable(at1) <tIS>
+	{
+	
+		Symbol aux = st.getSymbol(t.image);
+		if (aux instanceof SymbolFunction) {
+			System.err.println("Funcion");
+			SymbolFunction funcion = (SymbolFunction) aux;
+			funcion.returnType = at1.type;
+			funcion.parList = at2.parList;
+		}
+		
+	}
 }
 
 void inst_leer():
@@ -672,16 +720,16 @@ void factor(Attributes at) :
 
 void primario(Attributes at) :
 {
-	Token t = null; // revisar
+	Token t; // revisar
 }
 {
 	<tPARENTESIS_OPEN> expresion(at) <tPARENTESIS_CLOSE>
 |	<tINT2CHAR> <tPARENTESIS_OPEN> expresion(at) <tPARENTESIS_CLOSE>
 |	<tCHAR2INT> <tPARENTESIS_OPEN> expresion(at) <tPARENTESIS_CLOSE>
-|	LOOKAHEAD(2) <tID> <tPARENTESIS_OPEN> lista_una_o_mas_exps() <tPARENTESIS_CLOSE> { //invoc. func. o comp. array
+|	LOOKAHEAD(2) t = <tID> <tPARENTESIS_OPEN> lista_una_o_mas_exps() <tPARENTESIS_CLOSE> { //invoc. func. o comp. array
 		Symbol s = null;
 		try {
-			//s = st.getSymbol(t.image);
+			s = st.getSymbol(t.image);
 			if (!(s instanceof SymbolFunction)) {
 				//errSem.deteccion("Se esperaba función ...");
 			}

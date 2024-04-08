@@ -3,7 +3,7 @@ procedure cambio_base is
     num, base: integer;
     enB: integer;
 ------------------------------------------------------
-function b_dec(n,b: integer) return integer is  
+function b_dec(n,b: integer; a: array(0..2) of integer) return integer is  
     uc: integer;
     valRec: integer;
 begin

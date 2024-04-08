@@ -32,16 +32,20 @@ public class alike implements alikeConstants {
                 for (Token t : ids) {
                         if (at.isArray) {
                                 s = new SymbolArray(t.image, at.intList.get(0), at.intList.get(1), at.type);
+                                at.parList.add(s);
                         }
                         else {
                                 if (at.type == Symbol.Types.BOOL) {
                                         s = new SymbolBool(t.image);
+                                        at.parList.add(s);
                                 }
                                 else if (at.type == Symbol.Types.INT) {
                                         s = new SymbolInt(t.image);
+                                        at.parList.add(s);
                                 }
                                 else if (at.type == Symbol.Types.CHAR) {
                                         s = new SymbolChar(t.image);
+                                        at.parList.add(s);
                                 }
                         }
                         try {
@@ -109,9 +113,19 @@ public class alike implements alikeConstants {
 }*/
   static final public 
 
-void Programa() throws ParseException {
+void Programa() throws ParseException {Token t;
+        Attributes at = new Attributes();
     jj_consume_token(tPROCEDURE);
-    jj_consume_token(tID);
+    t = jj_consume_token(tID);
+Symbol s;
+                at.parList = new ArrayList<Symbol>();
+                s = new SymbolProcedure(t.image,at.parList);
+                try {
+                        st.insertSymbol(s);
+                }
+                catch (AlreadyDefinedSymbolException e) {
+                        //error
+                }
     jj_consume_token(tIS);
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case tID:{
@@ -175,7 +189,6 @@ void Programa() throws ParseException {
 
   static final public void declaracion_func() throws ParseException {Attributes at = new Attributes();
     cabecera_funcion(at);
-st.insertBlock();
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case tID:{
       declaracion_variables();
@@ -195,7 +208,6 @@ System.err.println(st.toString());
 
   static final public void declaracion_proc() throws ParseException {Attributes at = new Attributes();
     cabecera_procedimiento(at);
-st.insertBlock();
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case tID:{
       declaracion_variables();
@@ -252,10 +264,10 @@ ids.add(t);
     }
 }
 
-  static final public void declaracion_variables_puntocoma() throws ParseException {
+  static final public void declaracion_variables_puntocoma() throws ParseException {Attributes at = new Attributes();
     label_4:
     while (true) {
-      declaracion_var_puntocoma();
+      declaracion_var_puntocoma(at);
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case tID:{
         ;
@@ -323,8 +335,9 @@ Integer inicio,fin;
 at.isArray = true;
 }
 
-  static final public void declaracion_var_puntocoma() throws ParseException {ArrayList<Token> ids;
+  static final public void declaracion_var_puntocoma(Attributes at) throws ParseException {ArrayList<Token> ids;
         Attributes at1 = new Attributes(), at2 = new Attributes();
+        Symbol s;
     ids = lista_ids();
     jj_consume_token(tDOBLEPUNTO);
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -343,11 +356,13 @@ at.isArray = true;
     case tINTEGER:{
       tipo_variable(at1);
 iterarYanadirEnTablaDeSimbolos(ids,at1);
+                at.parList = at2.parList;
       break;
       }
     case tARRAY:{
       estructura_array(at2);
 iterarYanadirEnTablaDeSimbolos(ids,at2);
+                at.parList = at2.parList;
       break;
       }
     default:
@@ -384,7 +399,7 @@ iterarYanadirEnTablaDeSimbolos(ids,at2);
 }
 
   static final public void lista_parametros_funcion_o_proc(Attributes at) throws ParseException {
-    declaracion_var_puntocoma();
+    declaracion_var_puntocoma(at);
     label_5:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -397,7 +412,7 @@ iterarYanadirEnTablaDeSimbolos(ids,at2);
         break label_5;
       }
       jj_consume_token(tPUNTOCOMA);
-      declaracion_var_puntocoma();
+      declaracion_var_puntocoma(at);
     }
 }
 
@@ -407,14 +422,15 @@ iterarYanadirEnTablaDeSimbolos(ids,at2);
     t = jj_consume_token(tID);
 Symbol s;
                 at.parList = new ArrayList<Symbol>();
-                s = new SymbolFunction(t.image,at.parList,at1.type);
+                s = new SymbolProcedure(t.image,at.parList);
                 try {
                         st.insertSymbol(s);
+                        st.insertBlock();
                 }
                 catch (AlreadyDefinedSymbolException e) {
                         //error
                 }
-                st.insertBlock();
+
                 at2.parList = at1.parList;
     jj_consume_token(tPARENTESIS_OPEN);
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -426,9 +442,14 @@ Symbol s;
       jj_la1[14] = jj_gen;
       ;
     }
+Symbol aux = st.getSymbol(t.image);
+                if (aux instanceof SymbolProcedure) {
+                        System.err.println("Procedimiento");
+                        SymbolProcedure procedure = (SymbolProcedure) aux;
+                        procedure.parList = at2.parList;
+                }
     jj_consume_token(tPARENTESIS_CLOSE);
     jj_consume_token(tIS);
-at.type = at1.type;
 }
 
   static final public void cabecera_funcion(Attributes at) throws ParseException {Token t;
@@ -440,11 +461,11 @@ Symbol s;
                 s = new SymbolFunction(t.image, at.parList, at1.type);
                 try {
                         st.insertSymbol(s);
+                        st.insertBlock();
                 }
                 catch (AlreadyDefinedSymbolException e) {
                         // error
                 }
-                st.insertBlock();
                 at2.parList = at.parList;
     jj_consume_token(tPARENTESIS_OPEN);
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -460,7 +481,13 @@ Symbol s;
     jj_consume_token(tRETURN);
     tipo_variable(at1);
     jj_consume_token(tIS);
-at.type = at1.type;
+Symbol aux = st.getSymbol(t.image);
+                if (aux instanceof SymbolFunction) {
+                        System.err.println("Funcion");
+                        SymbolFunction funcion = (SymbolFunction) aux;
+                        funcion.returnType = at1.type;
+                        funcion.parList = at2.parList;
+                }
 }
 
   static final public void inst_leer() throws ParseException {
@@ -902,7 +929,7 @@ if (at1.type == at3.type) {
     }
 }
 
-  static final public void primario(Attributes at) throws ParseException {Token t = null; // revisar
+  static final public void primario(Attributes at) throws ParseException {Token t; // revisar
 
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case tPARENTESIS_OPEN:{
@@ -928,14 +955,14 @@ if (at1.type == at3.type) {
     default:
       jj_la1[35] = jj_gen;
       if (jj_2_1(2)) {
-        jj_consume_token(tID);
+        t = jj_consume_token(tID);
         jj_consume_token(tPARENTESIS_OPEN);
         lista_una_o_mas_exps();
         jj_consume_token(tPARENTESIS_CLOSE);
 //invoc. func. o comp. array
                 Symbol s = null;
                 try {
-                        //s = st.getSymbol(t.image);
+                        s = st.getSymbol(t.image);
                         if (!(s instanceof SymbolFunction)) {
                                 //errSem.deteccion("Se esperaba función ...");
                         }
@@ -1030,13 +1057,13 @@ if (at1.type == at3.type) {
 	   jj_la1_init_2();
 	}
 	private static void jj_la1_init_0() {
-	   jj_la1_0 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1e00,0x0,0x5e00,0x5e00,0x0,0x0,0x0,0x0,0x40000,0x0,0x0,0x401ba000,0x401ba000,0x80000000,0x80000000,0x80000000,0x0,0x7e00000,0x7e00000,0x180000,0x180000,0x180000,0x180000,0x38000000,0x38000000,0x40038000,0x0,0x38000,};
+	   jj_la1_0 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1e00,0x0,0x9e00,0x9e00,0x0,0x0,0x0,0x0,0x80000,0x0,0x0,0x80374000,0x80374000,0x0,0x0,0x0,0x0,0xfc00000,0xfc00000,0x300000,0x300000,0x300000,0x300000,0x70000000,0x70000000,0x80070000,0x0,0x70000,};
 	}
 	private static void jj_la1_init_1() {
-	   jj_la1_1 = new int[] {0x0,0x600,0x600,0x600,0x0,0x0,0x1000000,0x0,0x0,0x0,0x1000,0x0,0x0,0x8000000,0x0,0x0,0x40000000,0x0,0x4,0x8,0x407f01a2,0x407f01a2,0x1,0x1,0x1,0x1000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x40600180,0x40600000,0x180,};
+	   jj_la1_1 = new int[] {0x0,0xc00,0xc00,0xc00,0x0,0x0,0x2000000,0x0,0x0,0x0,0x2000,0x0,0x0,0x10000000,0x0,0x0,0x80000000,0x0,0x8,0x10,0x80fe0344,0x80fe0344,0x3,0x3,0x3,0x2000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x80c00300,0x80c00000,0x300,};
 	}
 	private static void jj_la1_init_2() {
-	   jj_la1_2 = new int[] {0x1,0x0,0x0,0x0,0x1,0x1,0x0,0x1,0x1,0x0,0x0,0x0,0x0,0x0,0x1,0x1,0x0,0x0,0x0,0x0,0x1,0x1,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1,0x0,0x1,};
+	   jj_la1_2 = new int[] {0x2,0x0,0x0,0x0,0x2,0x2,0x0,0x2,0x2,0x0,0x0,0x0,0x0,0x0,0x2,0x2,0x0,0x0,0x0,0x0,0x2,0x2,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x2,0x0,0x2,};
 	}
   static final private JJCalls[] jj_2_rtns = new JJCalls[1];
   static private boolean jj_rescan = false;
@@ -1270,7 +1297,7 @@ if (at1.type == at3.type) {
   /** Generate ParseException. */
   static public ParseException generateParseException() {
 	 jj_expentries.clear();
-	 boolean[] la1tokens = new boolean[65];
+	 boolean[] la1tokens = new boolean[66];
 	 if (jj_kind >= 0) {
 	   la1tokens[jj_kind] = true;
 	   jj_kind = -1;
@@ -1290,7 +1317,7 @@ if (at1.type == at3.type) {
 		 }
 	   }
 	 }
-	 for (int i = 0; i < 65; i++) {
+	 for (int i = 0; i < 66; i++) {
 	   if (la1tokens[i]) {
 		 jj_expentry = new int[1];
 		 jj_expentry[0] = i;
