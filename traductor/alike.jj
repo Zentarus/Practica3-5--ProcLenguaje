@@ -19,6 +19,8 @@ package traductor;
 
 import lib.symbolTable.*;
 import lib.symbolTable.exceptions.*;
+import lib.attributes.*;
+import java.util.ArrayList;
 
 //...
 
@@ -30,7 +32,7 @@ public class alike {
 	private static void initSymbolTable() {
 		boolean b;
 		String[] palsRes = {
-	    	"boolean","char","character", "integer", "null", "array",  
+	    	"boolean","char","character", "integer", "null", "array", 
 			"mod", "not", "and", "or",
 			"if", "elsif", "else", "then", "while", "loop", "true", "false",
 			"procedure", "function", "is", "ref", "of", "begin", "end", "return",
@@ -40,23 +42,29 @@ public class alike {
 		//st.insertReservedWords(palsRes);
 	}
 
-	private void iterarYanadirEnTablaDeSimbolos(ArrayList<Token> ids, Attributes at){
+	private static void iterarYanadirEnTablaDeSimbolos(ArrayList<Token> ids, Attributes at){
+		Symbol s = null;
 		for (Token t : ids) {
-			if (at.type == Symbol.types.BOOL) {
-				s = new SymbolBool(t.image);
-				st.insertSymbol(s);		}
-			else if (at.type == Symbol.types.INT) {
-				s = new SymbolInt(t.image);
-				st.insertSymbol(s);(ids);
+			if (at.isArray) {
+				s = new SymbolArray(t.image, at.intList.get(0), at.intList.get(1), at.type);
 			}
-			else if (at.type == Symbol.types.CHAR) {
-				s = new SymbolChar(t.image);
-				st.insertSymbol(s);(ids);
+			else {
+				if (at.type == Symbol.Types.BOOL) {
+					s = new SymbolBool(t.image);
+				}
+				else if (at.type == Symbol.Types.INT) {
+					s = new SymbolInt(t.image);
+				}
+				else if (at.type == Symbol.Types.CHAR) {
+					s = new SymbolChar(t.image);
+				}
 			}
-			else if (at.type == Symbol.type.ARRAY) {
-				s = new SymbolArray(t.image);
-				st.insertSymbol(s);(ids);
-			} 
+			try {
+				st.insertSymbol(s);
+			}
+			catch(AlreadyDefinedSymbolException e) {
+				System.err.println("Already Defined: " + e.getMessage());
+			}
 		}
 	}
    
@@ -267,38 +275,47 @@ void declaracion_proc_func() :
 
 void declaracion_func():
 {
-
+	Attributes at = new Attributes();
 }
 {
-	cabecera_funcion() {st.insertBlock();}
+	cabecera_funcion(at) {st.insertBlock();}
 	( declaracion_variables() )?
 	<tBEGIN>
 	instrucciones() 
 	<tEND>
 	<tPUNTOCOMA>
+	{
+		System.err.println(st.toString());
+		st.removeBlock();
+	}
 }
 
 void declaracion_proc():
 {
-
+	Attributes at = new Attributes();
 }
 {
-	cabecera_procedimiento() {st.insertBlock();}
+	cabecera_procedimiento(at) {st.insertBlock();}
 	( declaracion_variables() )?
 	<tBEGIN>
 	instrucciones() 
 	<tEND>
 	<tPUNTOCOMA>
+	{
+		System.err.println(st.toString());
+		st.removeBlock();
+	}
 }
 
 ArrayList<Token> lista_ids():
 {
-	ArrayList<Token> ids;
+	ArrayList<Token> ids = new ArrayList<Token>();
 	Token t;
 }
 {
 
 	t = <tID> {ids.add(t);} (<tCOMA> t = <tID> {ids.add(t);})*  //Aceptamos que una lista de ids pueda estar formada por un solo id
+	{return ids;}
 }
 
 void declaracion_variables() :
@@ -329,20 +346,34 @@ void tipo_variable(Attributes at) :
 	
 }
 
-void rango() :
+void rango(Attributes at) :
 {
-
+	Token t1, t2;
 }
 {
-	<tCONST_INT> <tDOSPUNTOS> <tCONST_INT>
+	t1 = <tCONST_INT> <tDOSPUNTOS> t2 = <tCONST_INT> 
+	{
+		Integer inicio,fin;
+		inicio = Integer.valueOf(t1.image);
+		fin = Integer.valueOf(t2.image);
+		if(inicio > fin) {
+			//error
+		}
+		else {
+			at.intList.add(inicio);
+			at.intList.add(fin);
+		}
+	}
 }
 
-Type estructura_array(Attributes at):
+void estructura_array(Attributes at):
 {
-
 }
 {
-	<tARRAY> <tPARENTESIS_OPEN> rango() <tPARENTESIS_CLOSE> <tOF> tipo_variable(at)
+	<tARRAY> <tPARENTESIS_OPEN> rango(at) <tPARENTESIS_CLOSE> <tOF> tipo_variable(at)
+	{
+		at.isArray = true;
+	}
 }
 
 void declaracion_var_puntocoma():
@@ -371,7 +402,7 @@ void declaracion_var():
 	<tPUNTOCOMA>
 }
 
-void lista_parametros_funcion_o_proc():
+void lista_parametros_funcion_o_proc(Attributes at):
 {
 
 }
@@ -387,6 +418,7 @@ void cabecera_procedimiento(Attributes at) :
 {
 	<tPROCEDURE>
 	t = <tID> {
+		Symbol s;
 		at.parList = new ArrayList<Symbol>();
 		s = new SymbolFunction(t.image,at.parList,at1.type);
 		try {
@@ -414,6 +446,7 @@ void cabecera_funcion(Attributes at) :
 {
 	<tFUNCTION> 
 	t = <tID> {
+		Symbol s;
 		at.parList = new ArrayList<Symbol>();
 		s = new SymbolFunction(t.image, at.parList, at1.type);
 		try {
@@ -474,17 +507,17 @@ void inst_invocacion_o_asignacion(Attributes at):
 	Attributes at1 = new Attributes(), at2 = new Attributes();
 }
 {
-	expresion() (<tASIGN> expresion()) ? // Completar parte de práctica 3
+	expresion(at1) (<tASIGN> expresion(at2)) ? // Completar parte de práctica 3
 
 }
 
 void inst_if():
 {
-
+	Attributes at1 = new Attributes(), at2 = new Attributes();
 }
 {
-	<tIF> expresion() <tTHEN> instrucciones()
-	(<tELIF>  expresion() <tTHEN> instrucciones())*
+	<tIF> expresion(at1) <tTHEN> instrucciones()
+	(<tELIF>  expresion(at2) <tTHEN> instrucciones())*
 	(<tELSE> instrucciones())?
 	<tEND> <tIF>
 	
@@ -492,20 +525,20 @@ void inst_if():
 
 void inst_while():
 {
-
+	Attributes at = new Attributes();
 }
 {
-	<tWHILE> expresion() <tLOOP> 
+	<tWHILE> expresion(at) <tLOOP> 
 	instrucciones() 
 	<tEND> <tLOOP>
 }
 
 void inst_return():
 {
-
+	Attributes at = new Attributes();
 }
 {
-	<tRETURN> expresion()
+	<tRETURN> expresion(at)
 }
 
 void inst_null():
@@ -518,14 +551,14 @@ void inst_null():
 
 void instruccion() :
 {
-
+	Attributes at = new Attributes();
 }
 {
 	( inst_leer() )
 |   ( inst_saltar_linea() )
 |	( inst_escribir() )
 |   ( inst_escribir_linea() )
-|   ( inst_invocacion_o_asignacion() )
+|   ( inst_invocacion_o_asignacion(at) )
 |   ( inst_if() )
 |   ( inst_while() )
 |   ( inst_return() )
@@ -540,25 +573,25 @@ void instrucciones() :
 	(instruccion() <tPUNTOCOMA>)+
 }
 
-void expresion() :
+void expresion(Attributes at) :
 {
 	
 }
-{
-	relacion()
-	( ((<tAND> | <tOR>) relacion())+ )?
+{	
+	relacion(at)
+	( ((<tAND> | <tOR>) relacion(at))+ )?
 }
 	
 void lista_una_o_mas_exps():
 {
-
+	Attributes at1 = new Attributes(), at2 = new Attributes();
 }
 {
-	(expresion() <tCOMA>)* expresion()
+	expresion(at1) (<tCOMA> expresion(at2))*
 	
 }
 
-void relacion(Attibutes at) :
+void relacion(Attributes at) :
 {
 	Token t;
 	Attributes at1 = new Attributes(), at2 = new Attributes(), at3 = new Attributes();
@@ -597,69 +630,68 @@ void operador_relacional(Attributes at) :
 }
 	
 
-void expresion_simple() :
+void expresion_simple(Attributes at) :
 {
 
 }
 {
 	( <tSUM> |	<tRES> )? 
-	termino()
-	( ( <tSUM> | <tRES> ) termino() )*
+	termino(at)
+	( ( <tSUM> | <tRES> ) termino(at) )*
 }
 	
 
-void termino() :
+void termino(Attributes at) :
 {
 
 }
 {
-	factor() ( operador_multiplicativo() factor() )*
+	factor(at) ( operador_multiplicativo() factor(at) )*
 }
 	
 
 void operador_multiplicativo() :
 {
-
+	
 }
 {
 	<tMUL> | <tMOD> | <tDIV>
 }
 	
-
-void factor() :
+void factor(Attributes at) :
 {
 
 }
 {
-	primario() 
-|	<tNOT> primario() 
+	primario(at) 
+|	<tNOT> primario(at) 
 
 }
 	
 
-void primario(Atributos at) :
+void primario(Attributes at) :
 {
-
+	Token t = null; // revisar
 }
 {
-	<tPARENTESIS_OPEN> expresion() <tPARENTESIS_CLOSE>
-|	<tINT2CHAR> <tPARENTESIS_OPEN> expresion() <tPARENTESIS_CLOSE>
-|	<tCHAR2INT> <tPARENTESIS_OPEN> expresion() <tPARENTESIS_CLOSE>
+	<tPARENTESIS_OPEN> expresion(at) <tPARENTESIS_CLOSE>
+|	<tINT2CHAR> <tPARENTESIS_OPEN> expresion(at) <tPARENTESIS_CLOSE>
+|	<tCHAR2INT> <tPARENTESIS_OPEN> expresion(at) <tPARENTESIS_CLOSE>
 |	LOOKAHEAD(2) <tID> <tPARENTESIS_OPEN> lista_una_o_mas_exps() <tPARENTESIS_CLOSE> { //invoc. func. o comp. array
 		Symbol s = null;
 		try {
-			s = st.getSymbol(t.image);
+			//s = st.getSymbol(t.image);
 			if (!(s instanceof SymbolFunction)) {
-				errSem.deteccion("Se esperaba función ...");
+				//errSem.deteccion("Se esperaba función ...");
 			}
 		}
 		catch (SymbolNotFoundException e) {
-			errSem.deteccion(e, t);
+			//errSem.deteccion(e, t);
 		}
 		at.isVar = false;
 		at.type = ((SymbolFunction)s).returnType;
 		// Procesar la lista de parametros reales ...
-		...
+		//...
 	}
 |	t = <tID> {             //var. o func. sin pars
 		Symbol s = null;
@@ -667,7 +699,7 @@ void primario(Atributos at) :
 			s = st.getSymbol(t.image);
 		}
 		catch (SymbolNotFoundException e) {
-			errSem.deteccion(e, t);
+			//errSem.deteccion(e, t);
 		}
 		at.isVar = true;
 		at.type = s.type;

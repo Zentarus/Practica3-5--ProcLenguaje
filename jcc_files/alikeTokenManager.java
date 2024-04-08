@@ -3,6 +3,8 @@
 package traductor;
 import lib.symbolTable.*;
 import lib.symbolTable.exceptions.*;
+import lib.attributes.*;
+import java.util.ArrayList;
 
 /** Token Manager. */
 @SuppressWarnings ("unused")

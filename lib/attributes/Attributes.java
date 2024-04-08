@@ -7,15 +7,21 @@ public class Attributes implements Cloneable {
     public Symbol.Types type;
     public Symbol.ParameterClass parClass;
     public ArrayList<Symbol> parList;
+    public ArrayList<Integer> intList;
+    public Boolean isArray;
+    public Boolean isVar;
 
     public Attributes() {
         type = Symbol.Types.UNDEFINED;
         parClass = Symbol.ParameterClass.VAL;
         parList = null;
-        // esArray o es componente de vector?
+        intList = null;
+        isArray = false;
+        isVar = false;
+
+        // es componente de vector?
         // const?
         // exps?
-        // esVar?
         // Completar y añadirlos al toString
     }
 
