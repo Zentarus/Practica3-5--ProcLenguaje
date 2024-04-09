@@ -3,7 +3,7 @@ procedure cambio_base is
     num, base: integer;
     enB: integer;
 ------------------------------------------------------
-function b_dec(n,b: integer; a: array(0..2) of integer) return integer is  
+function b_dec(n,b: integer; a: ref array(0..2) of integer) return integer is  --funciona tambien como procedure
     uc: integer;
     valRec: integer;
 begin
@@ -31,12 +31,12 @@ end;
 begin
 num := 4;
 base := 2;
-put("Este␣programa␣convierte␣n=",num,"␣a␣base␣b=", base);
-put_line(",␣y␣luego␣efect´ua␣la␣conversi´on␣inversa.");
+put("Este programa convierte n=",num,"a base b=", base);
+put_line(",y luego efectúa la conversión inversa.");
 put_line;
-put_line("n:␣",num);
-put_line("b:␣",base);
+put_line("n: ",num);
+put_line("b: ",base);
 enB := dec_b(num,base);
-put_line("dec_b(",num,",",base,"):␣",enB);
-put_line("b_dec(",enB,",",base,"):␣",b_dec(enB,base));
+put_line("dec_b(",num,",",base,"): ",enB);
+put_line("b_dec(",enB,",",base,"): ",b_dec(enB,base));
 end;

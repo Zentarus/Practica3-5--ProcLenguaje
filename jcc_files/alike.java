@@ -31,20 +31,20 @@ public class alike implements alikeConstants {
                 Symbol s = null;
                 for (Token t : ids) {
                         if (at.isArray) {
-                                s = new SymbolArray(t.image, at.intList.get(0), at.intList.get(1), at.type);
+                                s = new SymbolArray(t.image, at.intList.get(0), at.intList.get(1), at.type, at.parClass);
                                 at.parList.add(s);
                         }
                         else {
                                 if (at.type == Symbol.Types.BOOL) {
-                                        s = new SymbolBool(t.image);
+                                        s = new SymbolBool(t.image, at.parClass);
                                         at.parList.add(s);
                                 }
                                 else if (at.type == Symbol.Types.INT) {
-                                        s = new SymbolInt(t.image);
+                                        s = new SymbolInt(t.image, at.parClass);
                                         at.parList.add(s);
                                 }
                                 else if (at.type == Symbol.Types.CHAR) {
-                                        s = new SymbolChar(t.image);
+                                        s = new SymbolChar(t.image, at.parClass);
                                         at.parList.add(s);
                                 }
                         }
@@ -150,6 +150,8 @@ Symbol s;
     instrucciones();
     jj_consume_token(tEND);
     jj_consume_token(tPUNTOCOMA);
+System.err.println(st.toString());
+                st.removeBlock();
     jj_consume_token(0);
 }
 
@@ -340,9 +342,11 @@ at.isArray = true;
         Symbol s;
     ids = lista_ids();
     jj_consume_token(tDOBLEPUNTO);
+at1.parClass = Symbol.ParameterClass.VAL; at2.parClass = Symbol.ParameterClass.VAL;
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case tREF:{
       jj_consume_token(tREF);
+at1.parClass = Symbol.ParameterClass.REF; at2.parClass = Symbol.ParameterClass.REF;
       break;
       }
     default:
@@ -356,7 +360,7 @@ at.isArray = true;
     case tINTEGER:{
       tipo_variable(at1);
 iterarYanadirEnTablaDeSimbolos(ids,at1);
-                at.parList = at2.parList;
+                at.parList = at1.parList;
       break;
       }
     case tARRAY:{
@@ -398,8 +402,11 @@ iterarYanadirEnTablaDeSimbolos(ids,at2);
     jj_consume_token(tPUNTOCOMA);
 }
 
-  static final public void lista_parametros_funcion_o_proc(Attributes at) throws ParseException {
-    declaracion_var_puntocoma(at);
+  static final public void lista_parametros_funcion_o_proc(Attributes at) throws ParseException {Attributes at1 = new Attributes(), at2 = new Attributes();
+    declaracion_var_puntocoma(at1);
+for (Symbol s : at1.parList) {
+                        at.parList.add(s);
+                }
     label_5:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -412,7 +419,10 @@ iterarYanadirEnTablaDeSimbolos(ids,at2);
         break label_5;
       }
       jj_consume_token(tPUNTOCOMA);
-      declaracion_var_puntocoma(at);
+      declaracion_var_puntocoma(at2);
+for (Symbol s : at2.parList) {
+                                at.parList.add(s);
+                        }
     }
 }
 
@@ -444,7 +454,7 @@ Symbol s;
     }
 Symbol aux = st.getSymbol(t.image);
                 if (aux instanceof SymbolProcedure) {
-                        System.err.println("Procedimiento");
+                        //System.err.println("Procedimiento");
                         SymbolProcedure procedure = (SymbolProcedure) aux;
                         procedure.parList = at2.parList;
                 }
@@ -483,10 +493,11 @@ Symbol s;
     jj_consume_token(tIS);
 Symbol aux = st.getSymbol(t.image);
                 if (aux instanceof SymbolFunction) {
-                        System.err.println("Funcion");
+                        //System.err.println("Funcion");
                         SymbolFunction funcion = (SymbolFunction) aux;
                         funcion.returnType = at1.type;
                         funcion.parList = at2.parList;
+
                 }
 }
 
@@ -971,7 +982,7 @@ if (at1.type == at3.type) {
                         //errSem.deteccion(e, t);
                 }
                 at.isVar = false;
-                at.type = ((SymbolFunction)s).returnType;
+                //at.type = ((SymbolFunction)s).returnType;
                 // Procesar la lista de parametros reales ...
                 //...
 
