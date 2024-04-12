@@ -753,12 +753,17 @@ Symbol aux = st.getSymbol(t.image);
     }
 }
 
+/* CREO QUE ESTÁ COMPLETADA, SI FALTA ALGO SERÍA COMPLETAR VALORES DE at */
   static final public void relacion(Attributes at) throws ParseException {Token t;
         Attributes at1 = new Attributes(), at2 = new Attributes(), at3 = new Attributes();
     expresion_simple(at1);
 at.type = at1.type;
-                at.parClass = at1.parClass;
-                at.parList = at1.parList;
+                at.isConst = at1.isConst;
+                at.isVar = at1.isVar;
+                at.isVecComp = at1.isVecComp;
+                //at.parClass = at1.parClass;
+                //at.parList = at1.parList;
+
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case tEQU:
     case tGT:
@@ -773,9 +778,11 @@ if (at1.type == at3.type) {
                 }
                 else {
                         at.type = Symbol.Types.UNDEFINED;
-                        //error, no devolverá booleano si no se puede comparar
+                        //errSem.deteccion("Tipos incompatibles ...");
                 }
-                //completar los atributos de at
+                at.isVar = false;
+                at.isVecComp = false;
+                at.isConst = true; // Me imagino que True y False son constantes no?
 
       break;
       }
@@ -982,7 +989,7 @@ if (at1.type == at3.type) {
                         //errSem.deteccion(e, t);
                 }
                 at.isVar = false;
-                //at.type = ((SymbolFunction)s).returnType;
+                //at.type = ((SymbolFunction)s).returnType; esto daba problemas
                 // Procesar la lista de parametros reales ...
                 //...
 

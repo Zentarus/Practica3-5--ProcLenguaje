@@ -8,8 +8,7 @@ public class Attributes implements Cloneable {
     public Symbol.ParameterClass parClass;
     public ArrayList<Symbol> parList;
     public ArrayList<Integer> intList;
-    public Boolean isArray;
-    public Boolean isVar;
+    public Boolean isArray, isVar, isVecComp, isConst;
 
     public Attributes() {
         type = Symbol.Types.UNDEFINED;
@@ -18,9 +17,8 @@ public class Attributes implements Cloneable {
         intList = new ArrayList<Integer>();
         isArray = false;
         isVar = false;
-
-        // es componente de vector?
-        // const?
+        isVecComp = false;
+        isConst = false;
         // exps?
         // Completar y añadirlos al toString
     }
