@@ -592,7 +592,7 @@ void inst_invocacion_o_asignacion(Attributes at):
 	 expresion(at2) {
 		Symbol s = null;
 		try {
-			s = st.getSymbol(at1.name);
+			//s = st.getSymbol(at1.name);
 			
 			// Si variable es escalar y tipos at1 y at2 iguales -> OK
 			// Doy por asumido que escalares agrupa tmb char, string y bool
@@ -612,7 +612,9 @@ void inst_invocacion_o_asignacion(Attributes at):
 
 			}
 		}
-		// Hacer catch o dará error
+		catch (SymbolNotFoundException e){
+			//System.err.println("Error: " + t.image + " no esta declarado");
+		}
 	 } 
 	
 	) ? 
@@ -761,32 +763,63 @@ void operador_relacional(Attributes at) :
 }
 	
 
+/* COMPLETA */
+// En 'termino' sólo se comprueba si es int cuando se detecta que hay operaciones con mul, div o mod
+// En el caso de que 'termino' solo sea un factor, no se comprueba el tipo, por eso se comprueba en 
+// esta función, porque podríamos recibir cualquier tipo de dato.
+// Creo que se podría comprobar directamente en la función 'termino' que factor(at1) sea entero y así
+// ya no tendríamos que comprobar nada en 'expresion_simple' pues siempre 'termino' será un int.
 void expresion_simple(Attributes at) :
 {
-
+	Attributes at1 = new Attributes(), at2 = new Attributes();
 }
 {
 	( <tSUM> |	<tRES> )? 
-	termino(at)
-	( ( <tSUM> | <tRES> ) termino(at) )*
+	termino(at1) {
+		if (at1.type != Symbol.Types.INT) {
+			// error: El primer termino no es un entero
+		}
+	}
+	( ( <tSUM> | <tRES> ) termino(at2) {
+		if ((at2.type != at1.type) || (at2.type != Symbol.Types.INT)){
+			// error: Los tipos de terminos no coinciden o at2 no es entero
+		}
+	  } 
+	)*
 }
 	
 
+/* CREO QUE COMPLETADA */
 void termino(Attributes at) :
 {
+	Attributes at1 = new Attributes(), at2 = new Attributes();
 
 }
 {
-	factor(at) ( operador_multiplicativo() factor(at) )*
+	factor(at1) ( 
+		operador_multiplicativo() {
+			// Aparece una operación de mul, div o mod, por lo tanto comprobamos
+			// que at1 sea entero.
+			if (at1.type != Symbol.Types.INT) {
+				// error: El primer factor no es un entero
+			}
+		}
+	  	factor(at2) {
+			// Comprobamos que at2 es mismo tipo que at1, que deberá ser un entero.
+			if((at2.type != at1.type) || (at2.type != Symbol.Types.INT)) {
+				// error: Los tipos de factores no coinciden o at2 no es entero
+			}
+	  	}
+	)* 
 }
 	
-
+/* COMPLETADA -- NO HAY QUE PASAR NADA NO? */
 void operador_multiplicativo() :
 {
-	
-}
+
+}	
 {
-	<tMUL> | <tMOD> | <tDIV>
+	<tMUL> | <tMOD> | <tDIV> 
 }
 	
 void factor(Attributes at) :
@@ -835,10 +868,31 @@ void primario(Attributes at) :
 		at.isVar = true;
 		at.type = s.type;
 	}
-|	<tCONST_INT>
-|	<tCONST_CHAR>
-|	<tCONST_STRING> //rn sf.primario_8(t);
-|	<tTRUE>
-|	<tFALSE>
+|	<tCONST_INT> {
+		at.isVar = false;
+		at.type = Symbol.Types.INT;
+		at.isConst = true;
+	}
+|	<tCONST_CHAR> {
+		at.isVar = false;
+		at.type = Symbol.Types.CHAR;
+		at.isConst = true;
+	}
+|	<tCONST_STRING> { //rn sf.primario_8(t); 
+		at.isVar = false;
+		at.type = Symbol.Types.STRING;
+		at.isConst = true;
+	}
+
+|	<tTRUE> {
+		at.isVar = false;
+		at.type = Symbol.Types.BOOL;
+		at.isConst = true;
+	}
+|	<tFALSE> {
+		at.isVar = false;
+		at.type = Symbol.Types.BOOL;
+		at.isConst = true;
+	}
 }
 

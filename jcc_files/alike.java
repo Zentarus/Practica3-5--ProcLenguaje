@@ -541,6 +541,31 @@ Symbol aux = st.getSymbol(t.image);
     case tASIGN:{
       jj_consume_token(tASIGN);
       expresion(at2);
+Symbol s = null;
+                try {
+                        //s = st.getSymbol(at1.name);
+
+                        // Si variable es escalar y tipos at1 y at2 iguales -> OK
+                        // Doy por asumido que escalares agrupa tmb char, string y bool
+                        if((at1.type == Symbol.Types.INT || at1.type == Symbol.Types.CHAR ||
+                            at1.type == Symbol.Types.STRING || at1.type == Symbol.Types.BOOL) &&
+                                at1.type == at2.type){
+
+                        }
+                        else{
+
+                        }
+                        // Si es una componente de vector y tipos at1 y at2 iguales -> OK
+                        if(at1.isVecComp && (at1.type == at2.type)){
+
+                        }
+                        else {
+
+                        }
+                }
+                catch (SymbolNotFoundException e){
+                        //System.err.println("Error: " + t.image + " no esta declarado");
+                }
       break;
       }
     default:
@@ -880,8 +905,10 @@ if (at1.type == at3.type) {
     }
 }
 
-  static final public void termino(Attributes at) throws ParseException {
-    factor(at);
+/* COMPLETADA */
+  static final public void termino(Attributes at) throws ParseException {Token t;
+        Attributes at1 = new Attributes(), at2 = new Attributes();
+    factor(at1);
     label_11:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -896,8 +923,17 @@ if (at1.type == at3.type) {
         break label_11;
       }
       operador_multiplicativo();
-      factor(at);
+      factor(at2);
+// Comprobamos que at2 es mismo tipo que at1
+                if(at2.type != at1.type) {
+                        // error: Los tipos de factores no coinciden
+                }
     }
+// Aparece una operación de mul, div o mod, por lo tanto comprobamos
+                // que at1 sea entero y que los tipos coincidan entre at1 y at2.
+                if (at1.type != Symbol.Types.INT) {
+                        // error: El primer factor no es un entero
+                }
 }
 
   static final public void operador_multiplicativo() throws ParseException {
@@ -1011,22 +1047,38 @@ if (at1.type == at3.type) {
           }
         case tCONST_INT:{
           jj_consume_token(tCONST_INT);
+at.isVar = false;
+                at.type = Symbol.Types.INT;
+                at.isConst = true;
           break;
           }
         case tCONST_CHAR:{
           jj_consume_token(tCONST_CHAR);
+at.isVar = false;
+                at.type = Symbol.Types.CHAR;
+                at.isConst = true;
           break;
           }
         case tCONST_STRING:{
           jj_consume_token(tCONST_STRING);
+//rn sf.primario_8(t); 
+                at.isVar = false;
+                at.type = Symbol.Types.STRING;
+                at.isConst = true;
           break;
           }
         case tTRUE:{
           jj_consume_token(tTRUE);
+at.isVar = false;
+                at.type = Symbol.Types.BOOL;
+                at.isConst = true;
           break;
           }
         case tFALSE:{
           jj_consume_token(tFALSE);
+at.isVar = false;
+                at.type = Symbol.Types.BOOL;
+                at.isConst = true;
           break;
           }
         default:
