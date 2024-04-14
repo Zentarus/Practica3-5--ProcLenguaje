@@ -6,6 +6,7 @@ import lib.symbolTable.*;
 import lib.symbolTable.exceptions.*;
 import lib.attributes.*;
 import java.util.ArrayList;
+import lib.errores.ErrorSemantico;
 
 //...
 
@@ -319,7 +320,7 @@ Integer inicio,fin;
                 inicio = Integer.valueOf(t1.image);
                 fin = Integer.valueOf(t2.image);
                 if(inicio > fin) {
-                        //error
+                        ErrorSemantico.deteccion("Rango invalido");
                 }
                 else {
                         at.intList.add(inicio);
@@ -438,7 +439,7 @@ Symbol s;
                         st.insertBlock();
                 }
                 catch (AlreadyDefinedSymbolException e) {
-                        //error
+                        ErrorSemantico.deteccion(e,t.image);
                 }
 
                 at2.parList = at1.parList;
@@ -452,11 +453,16 @@ Symbol s;
       jj_la1[14] = jj_gen;
       ;
     }
-Symbol aux = st.getSymbol(t.image);
-                if (aux instanceof SymbolProcedure) {
-                        //System.err.println("Procedimiento");
-                        SymbolProcedure procedure = (SymbolProcedure) aux;
-                        procedure.parList = at2.parList;
+try {
+                        Symbol aux = st.getSymbol(t.image);
+                        if (aux instanceof SymbolProcedure) {
+                                //System.err.println("Procedimiento");
+                                SymbolProcedure procedure = (SymbolProcedure) aux;
+                                procedure.parList = at2.parList;
+                        }
+                }
+                catch (SymbolNotFoundException e) {
+                        ErrorSemantico.deteccion(e,t.image);
                 }
     jj_consume_token(tPARENTESIS_CLOSE);
     jj_consume_token(tIS);
@@ -474,7 +480,7 @@ Symbol s;
                         st.insertBlock();
                 }
                 catch (AlreadyDefinedSymbolException e) {
-                        // error
+                        ErrorSemantico.deteccion(e,t.image);
                 }
                 at2.parList = at.parList;
     jj_consume_token(tPARENTESIS_OPEN);
@@ -491,13 +497,17 @@ Symbol s;
     jj_consume_token(tRETURN);
     tipo_variable(at1);
     jj_consume_token(tIS);
-Symbol aux = st.getSymbol(t.image);
-                if (aux instanceof SymbolFunction) {
-                        //System.err.println("Funcion");
-                        SymbolFunction funcion = (SymbolFunction) aux;
-                        funcion.returnType = at1.type;
-                        funcion.parList = at2.parList;
-
+try {
+                        Symbol aux = st.getSymbol(t.image);
+                        if (aux instanceof SymbolFunction) {
+                                //System.err.println("Funcion");
+                                SymbolFunction funcion = (SymbolFunction) aux;
+                                funcion.returnType = at1.type;
+                                funcion.parList = at2.parList;
+                        }
+                }
+                catch (SymbolNotFoundException e) {
+                        ErrorSemantico.deteccion(e, t.image);
                 }
 }
 
@@ -534,8 +544,7 @@ Symbol aux = st.getSymbol(t.image);
     }
 }
 
-  static final public void inst_invocacion_o_asignacion(Attributes at) throws ParseException {Token t;
-        Attributes at1 = new Attributes(), at2 = new Attributes();
+  static final public void inst_invocacion_o_asignacion(Attributes at) throws ParseException {Attributes at1 = new Attributes(), at2 = new Attributes();
     expresion(at1);
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case tASIGN:{
@@ -543,28 +552,27 @@ Symbol aux = st.getSymbol(t.image);
       expresion(at2);
 Symbol s = null;
                 try {
-                        //s = st.getSymbol(at1.name);
+                        s = st.getSymbol(at1.name);
 
                         // Si variable es escalar y tipos at1 y at2 iguales -> OK
                         // Doy por asumido que escalares agrupa tmb char, string y bool
                         if((at1.type == Symbol.Types.INT || at1.type == Symbol.Types.CHAR ||
-                            at1.type == Symbol.Types.STRING || at1.type == Symbol.Types.BOOL) &&
-                                at1.type == at2.type){
+                            at1.type == Symbol.Types.BOOL) && at1.type == at2.type){
 
                         }
                         else{
-
+                                //error: tipos distintos
                         }
                         // Si es una componente de vector y tipos at1 y at2 iguales -> OK
-                        if(at1.isVecComp && (at1.type == at2.type)){
+                        if(at1.isVecComp && (s._baseType == at2.type)){
 
                         }
                         else {
-
+                                //error: la componente del vector no es del tipo del vector
                         }
                 }
                 catch (SymbolNotFoundException e){
-                        //System.err.println("Error: " + t.image + " no esta declarado");
+                        ErrorSemantico.deteccion(e, at1.name);
                 }
       break;
       }
@@ -779,10 +787,10 @@ Symbol s = null;
 }
 
 /* CREO QUE ESTÁ COMPLETADA, SI FALTA ALGO SERÍA COMPLETAR VALORES DE at */
-  static final public void relacion(Attributes at) throws ParseException {Token t;
-        Attributes at1 = new Attributes(), at2 = new Attributes(), at3 = new Attributes();
+  static final public void relacion(Attributes at) throws ParseException {Attributes at1 = new Attributes(), at2 = new Attributes(), at3 = new Attributes();
     expresion_simple(at1);
-at.type = at1.type;
+at.name = at1.name;
+                at.type = at1.type;
                 at.isConst = at1.isConst;
                 at.isVar = at1.isVar;
                 at.isVecComp = at1.isVecComp;
@@ -803,7 +811,7 @@ if (at1.type == at3.type) {
                 }
                 else {
                         at.type = Symbol.Types.UNDEFINED;
-                        //errSem.deteccion("Tipos incompatibles ...");
+                        ErrorSemantico.deteccion("Tipos incompatibles ...");
                 }
                 at.isVar = false;
                 at.isVecComp = false;
@@ -850,7 +858,13 @@ if (at1.type == at3.type) {
     }
 }
 
-  static final public void expresion_simple(Attributes at) throws ParseException {
+/* COMPLETA */
+// En 'termino' sólo se comprueba si es int cuando se detecta que hay operaciones con mul, div o mod
+// En el caso de que 'termino' solo sea un factor, no se comprueba el tipo, por eso se comprueba en 
+// esta función, porque podríamos recibir cualquier tipo de dato.
+// Creo que se podría comprobar directamente en la función 'termino' que factor(at1) sea entero y así
+// ya no tendríamos que comprobar nada en 'expresion_simple' pues siempre 'termino' será un int.
+  static final public void expresion_simple(Attributes at) throws ParseException {Attributes at1 = new Attributes(), at2 = new Attributes();
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case tSUM:
     case tRES:{
@@ -874,7 +888,14 @@ if (at1.type == at3.type) {
       jj_la1[29] = jj_gen;
       ;
     }
-    termino(at);
+    termino(at1);
+at.name = at1.name;
+                if (at1.type != Symbol.Types.INT) {
+                        // error: El primer termino no es un entero
+                        ErrorSemantico.deteccion("El primer termino no es un entero");
+                        System.err.println(at1.type);
+                        System.err.println(at1.name);
+                }
     label_10:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -901,14 +922,18 @@ if (at1.type == at3.type) {
         jj_consume_token(-1);
         throw new ParseException();
       }
-      termino(at);
+      termino(at2);
+if ((at2.type != at1.type) || (at2.type != Symbol.Types.INT)){
+                        // error: Los tipos de terminos no coinciden o at2 no es entero
+                        ErrorSemantico.deteccion("Los tipos de terminos no coinciden");
+                }
     }
 }
 
-/* COMPLETADA */
-  static final public void termino(Attributes at) throws ParseException {Token t;
-        Attributes at1 = new Attributes(), at2 = new Attributes();
+/* CREO QUE COMPLETADA */
+  static final public void termino(Attributes at) throws ParseException {Attributes at1 = new Attributes(), at2 = new Attributes();
     factor(at1);
+at.name = at1.name; at.type = at1.type;
     label_11:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -923,19 +948,22 @@ if (at1.type == at3.type) {
         break label_11;
       }
       operador_multiplicativo();
-      factor(at2);
-// Comprobamos que at2 es mismo tipo que at1
-                if(at2.type != at1.type) {
-                        // error: Los tipos de factores no coinciden
-                }
-    }
 // Aparece una operación de mul, div o mod, por lo tanto comprobamos
-                // que at1 sea entero y que los tipos coincidan entre at1 y at2.
-                if (at1.type != Symbol.Types.INT) {
-                        // error: El primer factor no es un entero
-                }
+                        // que at1 sea entero.
+                        if (at1.type != Symbol.Types.INT) {
+                                // error: El primer factor no es un entero
+                                ErrorSemantico.deteccion("El primer factor no es un entero");
+                        }
+      factor(at2);
+// Comprobamos que at2 es mismo tipo que at1, que deberá ser un entero.
+                        if((at2.type != at1.type) || (at2.type != Symbol.Types.INT)) {
+                                // error: Los tipos de factores no coinciden o at2 no es entero
+                                ErrorSemantico.deteccion("Los tipos de factores no coinciden");
+                        }
+    }
 }
 
+/* COMPLETADA -- NO HAY QUE PASAR NADA NO? */
   static final public void operador_multiplicativo() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case tMUL:{
@@ -1017,14 +1045,18 @@ if (at1.type == at3.type) {
                 Symbol s = null;
                 try {
                         s = st.getSymbol(t.image);
-                        if (!(s instanceof SymbolFunction)) {
-                                //errSem.deteccion("Se esperaba función ...");
+                        if (s instanceof SymbolArray) {
+                                at.isVecComp = true;
+                        }
+                        else if (!(s instanceof SymbolFunction)) {
+                                ErrorSemantico.deteccion("Se esperaba componente de vector o funci\u00f3n ...");
                         }
                 }
                 catch (SymbolNotFoundException e) {
-                        //errSem.deteccion(e, t);
+                        ErrorSemantico.deteccion(e, t.image);
                 }
                 at.isVar = false;
+                at.name = t.image;
                 //at.type = ((SymbolFunction)s).returnType; esto daba problemas
                 // Procesar la lista de parametros reales ...
                 //...
@@ -1039,10 +1071,11 @@ if (at1.type == at3.type) {
                         s = st.getSymbol(t.image);
                 }
                 catch (SymbolNotFoundException e) {
-                        //errSem.deteccion(e, t);
+                        ErrorSemantico.deteccion(e, t.image);
                 }
                 at.isVar = true;
                 at.type = s.type;
+                at.name = t.image;
           break;
           }
         case tCONST_INT:{

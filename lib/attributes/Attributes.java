@@ -9,6 +9,7 @@ public class Attributes implements Cloneable {
     public ArrayList<Symbol> parList;
     public ArrayList<Integer> intList;
     public Boolean isArray, isVar, isVecComp, isConst;
+    public String name;
 
     public Attributes() {
         type = Symbol.Types.UNDEFINED;
@@ -19,6 +20,7 @@ public class Attributes implements Cloneable {
         isVar = false;
         isVecComp = false;
         isConst = false;
+        name = "";
         // exps?
         // Completar y añadirlos al toString
     }

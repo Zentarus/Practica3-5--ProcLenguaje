@@ -5,6 +5,7 @@ import lib.symbolTable.*;
 import lib.symbolTable.exceptions.*;
 import lib.attributes.*;
 import java.util.ArrayList;
+import lib.errores.ErrorSemantico;
 
 /** Token Manager. */
 @SuppressWarnings ("unused")

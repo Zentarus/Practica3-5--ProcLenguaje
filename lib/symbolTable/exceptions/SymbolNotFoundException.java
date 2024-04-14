@@ -10,10 +10,9 @@
 
 package lib.symbolTable.exceptions;
 
-public class SymbolNotFoundException extends Error {
+public class SymbolNotFoundException extends Exception {
 
 	public SymbolNotFoundException() {
 
 	}
-
 }
