@@ -336,6 +336,8 @@ Integer inicio,fin;
     jj_consume_token(tOF);
     tipo_variable(at);
 at.isArray = true;
+                // Faltarían más cosas de atribuir a at?
+
 }
 
   static final public void declaracion_var_puntocoma(Attributes at) throws ParseException {ArrayList<Token> ids;
@@ -343,11 +345,13 @@ at.isArray = true;
         Symbol s;
     ids = lista_ids();
     jj_consume_token(tDOBLEPUNTO);
-at1.parClass = Symbol.ParameterClass.VAL; at2.parClass = Symbol.ParameterClass.VAL;
+at1.parClass = Symbol.ParameterClass.VAL;
+                at2.parClass = Symbol.ParameterClass.VAL;
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case tREF:{
       jj_consume_token(tREF);
-at1.parClass = Symbol.ParameterClass.REF; at2.parClass = Symbol.ParameterClass.REF;
+at1.parClass = Symbol.ParameterClass.REF;
+                at2.parClass = Symbol.ParameterClass.REF;
       break;
       }
     default:
@@ -361,13 +365,13 @@ at1.parClass = Symbol.ParameterClass.REF; at2.parClass = Symbol.ParameterClass.R
     case tINTEGER:{
       tipo_variable(at1);
 iterarYanadirEnTablaDeSimbolos(ids,at1);
-                at.parList = at1.parList;
+                  at.parList = at1.parList;
       break;
       }
     case tARRAY:{
       estructura_array(at2);
 iterarYanadirEnTablaDeSimbolos(ids,at2);
-                at.parList = at2.parList;
+                  at.parList = at2.parList;
       break;
       }
     default:
@@ -684,10 +688,8 @@ if (at2.type != Symbol.Types.BOOL) {
     jj_consume_token(tRETURN);
     expresion(at);
 if (!((at.type == Symbol.Types.INT) || (at.type == Symbol.Types.BOOL) || (at.type == Symbol.Types.CHAR))){
-                        if(at.isConst){
-                                System.err.println("Es el 0");
-                        }
-                        ErrorSemantico.deteccion("Tipo incompatible a devolver en return <inst_return>");
+                        String _error = "Tipo incompatible a devolver en return, (" + at.type.toString() + ") <inst_return>";
+                        ErrorSemantico.deteccion(_error);
                 }
 }
 
@@ -1047,12 +1049,10 @@ if (at1.type == at3.type) {
     }
     termino(at1);
 at.name = at1.name;
-                if (at1.type != Symbol.Types.INT) {
-                        // error: El primer termino no es un entero
-                        ErrorSemantico.deteccion("El primer termino no es un entero");
-                        System.err.println(at1.type);
-                        System.err.println(at1.name);
-                }
+                at.type = at1.type;
+                at.isConst = at1.isConst;
+                at.isVar = at1.isVar;
+                at.isVecComp = at1.isVecComp;
     label_11:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -1080,9 +1080,15 @@ at.name = at1.name;
         throw new ParseException();
       }
       termino(at2);
-if ((at2.type != at1.type) || (at2.type != Symbol.Types.INT)){
+if (at1.type != Symbol.Types.INT) {
+                        // error: El primer termino no es un entero
+                        ErrorSemantico.deteccion("El primer termino no es un entero");
+                        System.err.println(at1.type);
+                        System.err.println(at1.name);
+                }
+                if ((at2.type != at1.type) || (at2.type != Symbol.Types.INT)){
                         // error: Los tipos de terminos no coinciden o at2 no es entero
-                        ErrorSemantico.deteccion("Los tipos de terminos no coinciden");
+                        ErrorSemantico.deteccion("Terminos no coinciden, segundo temrino no es un entero");
                 }
     }
 }

@@ -395,6 +395,7 @@ void estructura_array(Attributes at):
 	<tARRAY> <tPARENTESIS_OPEN> rango(at) <tPARENTESIS_CLOSE> <tOF> tipo_variable(at)
 	{
 		at.isArray = true;
+		// Faltarían más cosas de atribuir a at?
 	}
 }
 
@@ -405,21 +406,23 @@ void declaracion_var_puntocoma(Attributes at):
 	Symbol s;
 }
 {
-	ids = lista_ids() 
-	<tDOBLEPUNTO>
-	{at1.parClass = Symbol.ParameterClass.VAL; at2.parClass = Symbol.ParameterClass.VAL;}
-	(<tREF> {at1.parClass = Symbol.ParameterClass.REF; at2.parClass = Symbol.ParameterClass.REF;})?
+	ids = lista_ids() <tDOBLEPUNTO> {
+		at1.parClass = Symbol.ParameterClass.VAL; 
+		at2.parClass = Symbol.ParameterClass.VAL;
+		}
+	(<tREF> {
+		at1.parClass = Symbol.ParameterClass.REF; 
+		at2.parClass = Symbol.ParameterClass.REF;
+		})?
 	( tipo_variable(at1) 
-	{ 
-		iterarYanadirEnTablaDeSimbolos(ids,at1);
-		at.parList = at1.parList;
-	} 
-| 	
-  	estructura_array(at2) 
-	{ 
-		iterarYanadirEnTablaDeSimbolos(ids,at2); 
-		at.parList = at2.parList;
-	}
+		{ iterarYanadirEnTablaDeSimbolos(ids,at1);
+		  at.parList = at1.parList;
+		} 
+	  | 	
+  	  estructura_array(at2) // Aquí se supone que permitimos vectores ya sea por valor o ref como parametros
+		{ iterarYanadirEnTablaDeSimbolos(ids,at2); 
+		  at.parList = at2.parList;
+		}
 	)
 }
 
@@ -733,7 +736,8 @@ void inst_return():
 {
 	<tRETURN> expresion(at) {
 		if (!((at.type == Symbol.Types.INT) || (at.type == Symbol.Types.BOOL) || (at.type == Symbol.Types.CHAR))){
-			ErrorSemantico.deteccion("Tipo incompatible a devolver en return <inst_return>");	
+			String _error = "Tipo incompatible a devolver en return, (" + at.type.toString() + ") <inst_return>";
+			ErrorSemantico.deteccion(_error);	
 		}
 	}
 }
@@ -899,17 +903,22 @@ void expresion_simple(Attributes at) :
 	( <tSUM> |	<tRES> )? 
 	termino(at1) {
 		at.name = at1.name;
+		at.type = at1.type;
+		at.isConst = at1.isConst;
+		at.isVar = at1.isVar;
+		at.isVecComp = at1.isVecComp;
+	
+	}
+	( ( <tSUM> | <tRES> ) termino(at2) {
 		if (at1.type != Symbol.Types.INT) {
 			// error: El primer termino no es un entero
 			ErrorSemantico.deteccion("El primer termino no es un entero");
 			System.err.println(at1.type);
 			System.err.println(at1.name);
 		}
-	}
-	( ( <tSUM> | <tRES> ) termino(at2) {
 		if ((at2.type != at1.type) || (at2.type != Symbol.Types.INT)){
 			// error: Los tipos de terminos no coinciden o at2 no es entero
-			ErrorSemantico.deteccion("Los tipos de terminos no coinciden");
+			ErrorSemantico.deteccion("Terminos no coinciden, segundo temrino no es un entero");
 		}
 	  } 
 	)*
