@@ -1,21 +1,12 @@
 Linea 603 - El simbolo que obtenemos es el del array o el de la componente
+Linea X   - Construcción de errores y excepciones (como hay que completarlos)
+
 
 Al ejecutar pilla strings
 
 COSAS QUE FALTAN --
 
-    - Funciones intToChar y viceversa:
-        Asegurarnos que los parametros de las funciones son correctos
-        Tener en cuenta lo que devuelven, es decir, que el tipo que le pasemos
-        como parametro sea int y lo que devuelva char (en el caso de intToChar)
-    
-    - Comprobar que dos vectores son iguales
+    - Comprobar que dos vectores son iguales (PREGUNTAR)
 
-    - Que se acepte identificadores en las asignaciones en la parte izq (creo que lo tenemos ya)
-    
-    - PutLinea, put funciones echar un vistazo a ver si cumple todo
-
-    - Parametros de función, comprobar si declaramos una función y la llamamos, comprobar  
-      que los parametros sean el mismo numero, que sean referencia, mismo tipo etc...
-
+    - Revisar como pasar los vectores como parametros a funciones y procedimientos.
     

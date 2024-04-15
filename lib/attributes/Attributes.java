@@ -22,6 +22,7 @@ public class Attributes implements Cloneable {
         isConst = false;
         name = "";
         // exps?
+        // Se va a necesitar añadir un atributo CodeBlock 'code' (practica4)
         // Completar y añadirlos al toString
     }
 
