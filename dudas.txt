@@ -1,12 +1,16 @@
 Linea 603 - El simbolo que obtenemos es el del array o el de la componente
-Linea X   - Construcción de errores y excepciones (como hay que completarlos)
 
 
 Al ejecutar pilla strings
 
-COSAS QUE FALTAN --
+COSAS QUE FALTAN / DUDAS:
+
+    - Construcción de errores y excepciones (como hay que completarlos)
 
     - Comprobar que dos vectores son iguales (PREGUNTAR)
 
-    - Revisar como pasar los vectores como parametros a funciones y procedimientos.
+    - Si ya añadimos variables cuando se declaran nombres y funciones, faltaría 
+      añadir las que detecta primario en <tID> ? 
+
+    - Revisar como pasar los vectores como parametros a funciones y procedimientos. (Los acepta)
     

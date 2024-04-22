@@ -1065,17 +1065,18 @@ void primario(Attributes at) :
 		// Procesar la lista de parametros reales ...
 		//...
 	}
-|	t = <tID> {             //var. o func. sin pars
+|	t = <tID> {             //var. o func. sin pars 
+		//¿No faltaria añadirla a la tabla semántica?
 		Symbol s = null;
 		try {
 			s = st.getSymbol(t.image);
+			at.isVar = true;
+			at.type = s.type;
+			at.name = t.image;
 		}
 		catch (SymbolNotFoundException e) {
 			ErrorSemantico.deteccion(e, t.image);
 		}
-		at.isVar = true;
-		at.type = s.type;
-		at.name = t.image;
 	}
 |	<tCONST_INT> {
 		at.isVar = false;
