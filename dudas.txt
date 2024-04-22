@@ -14,3 +14,27 @@ COSAS QUE FALTAN / DUDAS:
 
     - Revisar como pasar los vectores como parametros a funciones y procedimientos. (Los acepta)
     
+
+-------------------- FALTA
+
+Comprobar que el acceso a la componente del vector esté dentro del rango
+Comprobar el tipo de valor que devuelven las llamadas a funciones.
+En expresion() no llega el atributo con el parametro name asignado
+---
+SymbolNotFoundException
+Ignacio Huitzil Velasco
+16:17
+DEBUG_PARSER = true;
+Ignacio Huitzil Velasco
+16:53
+( <tASSING>
+        expresion(at2) )?
+Ignacio Huitzil Velasco
+16:54
+1)   t = < tID > 
+        <tPARENTHESIS_LEFT>  )
+| t =  <tID>    // un id o variable o un procedimiento
+Ignacio Huitzil Velasco
+16:55
+( <tASSING>
+        expresion(at2) )?

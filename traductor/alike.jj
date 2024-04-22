@@ -8,6 +8,7 @@
 options {
 	IGNORE_CASE = true;
 	COMMON_TOKEN_ACTION = false;
+	DEBUG_PARSER = true;
 }
 
 // -----------------------------------------------------------------------------
@@ -628,7 +629,7 @@ void inst_invocacion_o_asignacion(Attributes at):
 {
 	Attributes at1 = new Attributes(), at2 = new Attributes();
 }
-{
+{	// o componente de vector, o <tID> (cambiarlo por expresion), o procedimiento (con y sin parametros)
 	expresion(at1) {
 		try {
 			Symbol s = st.getSymbol(at1.name);
@@ -643,9 +644,13 @@ void inst_invocacion_o_asignacion(Attributes at):
 	(<tASIGN> 
 	 expresion(at2) {
 		Symbol s = null, s2 = null;
+		System.out.println("----------->" + at1.name);
+		System.out.println("----------->" + at2.name);
 		try {
 			s = st.getSymbol(at1.name);
 			s2 = st.getSymbol(at2.name);
+			System.out.println("----------->" + s.toString());
+			System.out.println("----------->" + s2.toString());
 
 			// Funciones y procedimientos no pueden ser asignables.
 			if (s instanceof SymbolFunction || s instanceof SymbolProcedure) {
@@ -678,6 +683,7 @@ void inst_invocacion_o_asignacion(Attributes at):
 					ErrorSemantico.deteccion("La componente del vector no es del tipo del vector");
 				}
 			}
+
 		}
 		catch (SymbolNotFoundException e){
 			ErrorSemantico.deteccion(e, at1.name);
@@ -932,7 +938,7 @@ void termino(Attributes at) :
 
 }
 {
-	factor(at1) {at.name = at1.name; at.type = at1.type;} ( 
+	factor(at1) {at.name = at1.name; at.type = at1.type; System.out.println("Tipo: " + at.type);} ( 
 		operador_multiplicativo() {
 			// Aparece una operación de mul, div o mod, por lo tanto comprobamos
 			// que at1 sea entero.
