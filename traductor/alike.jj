@@ -8,7 +8,7 @@
 options {
 	IGNORE_CASE = true;
 	COMMON_TOKEN_ACTION = false;
-	DEBUG_PARSER = true;
+	DEBUG_PARSER = false;
 }
 
 // -----------------------------------------------------------------------------
@@ -616,6 +616,7 @@ void inst_escribir_linea():
 		for (Attributes at : ats) {
 			if (!((at.type == Symbol.Types.INT) || (at.type == Symbol.Types.BOOL) 
 			|| (at.type == Symbol.Types.CHAR) || (at.type == Symbol.Types.STRING))) {
+				System.err.println(at.type);
 				ErrorSemantico.deteccion("Se esperaba entero, booleano, caracter o string <inst_escribir_linea>");
 			}
 		}
@@ -644,13 +645,13 @@ void inst_invocacion_o_asignacion(Attributes at):
 	(<tASIGN> 
 	 expresion(at2) {
 		Symbol s = null, s2 = null;
-		System.out.println("----------->" + at1.name);
-		System.out.println("----------->" + at2.name);
+		//System.out.println("----------->" + at1.name);
+		//System.out.println("----------->" + at2.name);
 		try {
 			s = st.getSymbol(at1.name);
 			s2 = st.getSymbol(at2.name);
-			System.out.println("----------->" + s.toString());
-			System.out.println("----------->" + s2.toString());
+			//System.out.println("----------->" + s.toString());
+			//System.out.println("----------->" + s2.toString());
 
 			// Funciones y procedimientos no pueden ser asignables.
 			if (s instanceof SymbolFunction || s instanceof SymbolProcedure) {
@@ -667,7 +668,7 @@ void inst_invocacion_o_asignacion(Attributes at):
 					ErrorSemantico.deteccion("Asignacion con tipos distintos");
 				}
 				// Si es una componente de vector y tipos at1 y at2 iguales -> OK
-				if(!(at1.isVecComp && (((SymbolArray) s).baseType == ((SymbolFunction)s2).returnType))){
+				if(at1.isVecComp && (((SymbolArray) s).baseType != ((SymbolFunction)s2).returnType)){
 					ErrorSemantico.deteccion("La componente del vector no es del tipo del vector");
 				}
 			}
@@ -679,7 +680,8 @@ void inst_invocacion_o_asignacion(Attributes at):
 					ErrorSemantico.deteccion("Asignacion con tipos distintos");
 				}
 				// Si es una componente de vector y tipos at1 y at2 iguales -> OK
-				if(!(at1.isVecComp && (((SymbolArray) s).baseType == at2.type))){
+				if(at1.isVecComp && (((SymbolArray) s).baseType != at2.type)){
+					System.out.println(at1.name);
 					ErrorSemantico.deteccion("La componente del vector no es del tipo del vector");
 				}
 			}
@@ -817,6 +819,7 @@ void expresion(Attributes at) :
 {	
 	relacion(at1) {
 		at.type = at1.type;
+		at.name = at1.name;
 	}
 	(((<tAND> | <tOR>) 
 	relacion(at2) 
@@ -938,7 +941,7 @@ void termino(Attributes at) :
 
 }
 {
-	factor(at1) {at.name = at1.name; at.type = at1.type; System.out.println("Tipo: " + at.type);} ( 
+factor(at1) {at.name = at1.name; at.type = at1.type; /*System.out.println("Tipo: " + at.type);*/} ( 
 		operador_multiplicativo() {
 			// Aparece una operación de mul, div o mod, por lo tanto comprobamos
 			// que at1 sea entero.
@@ -1056,6 +1059,7 @@ void primario(Attributes at) :
 							break;
 						}
 					}
+					at.type = ((SymbolFunction)s).returnType;
 				}
 			}
 			else {

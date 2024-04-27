@@ -38,3 +38,8 @@ Ignacio Huitzil Velasco
 16:55
 ( <tASSING>
         expresion(at2) )?
+
+
+------------------------
+Ahora mismo solo da:
+-Simbolo no encontrado (num y base)
