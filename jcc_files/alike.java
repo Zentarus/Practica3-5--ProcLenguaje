@@ -887,6 +887,7 @@ if (!((at.type == Symbol.Types.INT) || (at.type == Symbol.Types.BOOL) || (at.typ
 }
 
   static final public void expresion(Attributes at) throws ParseException {Attributes at1 = new Attributes(), at2 = new Attributes();
+        Integer operador = -1;
     relacion(at1);
 at.type = at1.type;
                 at.name = at1.name;
@@ -898,10 +899,12 @@ at.type = at1.type;
         switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
         case tAND:{
           jj_consume_token(tAND);
+operador = 0;
           break;
           }
         case tOR:{
           jj_consume_token(tOR);
+operador = 1;
           break;
           }
         default:
@@ -916,6 +919,16 @@ if (!((at1.type == at2.type) && (at1.type == Symbol.Types.BOOL))) {
                 }
                 else{
                         at.type = at1.type;
+                }
+                at.code.addBlock(at1.code);
+                at.code.addBlock(at2.code);
+                switch(operador) {
+                        case 0:
+                                at.code.addInst(OpCode.AND);
+                                break;
+                        case 1:
+                                at.code.addInst(OpCode.OR);
+                                break;
                 }
         switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
         case tAND:
@@ -957,7 +970,8 @@ ats.add(at2);
 }
 
 /* CREO QUE ESTÁ COMPLETADA, SI FALTA ALGO SERÍA COMPLETAR VALORES DE at */
-  static final public void relacion(Attributes at) throws ParseException {Attributes at1 = new Attributes(), at2 = new Attributes(), at3 = new Attributes();
+  static final public void relacion(Attributes at) throws ParseException {Attributes at1 = new Attributes(), at2 = new Attributes();
+        ArrayList<Integer> operador = new ArrayList<Integer>();
     expresion_simple(at1);
 at.name = at1.name;
                 at.type = at1.type;
@@ -967,6 +981,9 @@ at.name = at1.name;
                 //at.parClass = at1.parClass;
                 //at.parList = at1.parList;
 
+                // ----------------------------------------------------
+
+                at.code = at1.code;
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case tEQU:
     case tGT:
@@ -974,9 +991,9 @@ at.name = at1.name;
     case tGE:
     case tLE:
     case tDIF:{
-      operador_relacional(at2);
-      expresion_simple(at3);
-if (at1.type == at3.type) {
+      operador_relacional(operador);
+      expresion_simple(at2);
+if (at1.type == at2.type) {
                         at.type = Symbol.Types.BOOL;
                 }
                 else {
@@ -986,6 +1003,29 @@ if (at1.type == at3.type) {
                 at.isVar = false;
                 at.isVecComp = false;
                 at.isConst = true;
+
+                at.code.addBlock(at1.code);
+                at.code.addBlock(at2.code);
+                switch(operador.get(0)) {
+                        case 0:
+                                at.code.addInst(OpCode.EQ);
+                                break;
+                        case 1:
+                                at.code.addInst(OpCode.LT);
+                                break;
+                        case 2:
+                                at.code.addInst(OpCode.GT);
+                                break;
+                        case 3:
+                                at.code.addInst(OpCode.LTE);
+                                break;
+                        case 4:
+                                at.code.addInst(OpCode.GTE);
+                                break;
+                        case 5:
+                                at.code.addInst(OpCode.NEQ);
+                                break;
+                }
       break;
       }
     default:
@@ -994,30 +1034,36 @@ if (at1.type == at3.type) {
     }
 }
 
-  static final public void operador_relacional(Attributes at) throws ParseException {
+  static final public void operador_relacional(ArrayList<Integer> operador) throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case tEQU:{
       jj_consume_token(tEQU);
+operador.add(0);
       break;
       }
     case tLT:{
       jj_consume_token(tLT);
+operador.add(1);
       break;
       }
     case tGT:{
       jj_consume_token(tGT);
+operador.add(2);
       break;
       }
     case tLE:{
       jj_consume_token(tLE);
+operador.add(3);
       break;
       }
     case tGE:{
       jj_consume_token(tGE);
+operador.add(4);
       break;
       }
     case tDIF:{
       jj_consume_token(tDIF);
+operador.add(5);
       break;
       }
     default:
@@ -1034,16 +1080,20 @@ if (at1.type == at3.type) {
 // Creo que se podría comprobar directamente en la función 'termino' que factor(at1) sea entero y así
 // ya no tendríamos que comprobar nada en 'expresion_simple' pues siempre 'termino' será un int.
   static final public void expresion_simple(Attributes at) throws ParseException {Attributes at1 = new Attributes(), at2 = new Attributes();
+        Integer operador = -1;
+        Integer operador2 =  -1;
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case tSUM:
     case tRES:{
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case tSUM:{
         jj_consume_token(tSUM);
+operador2 = 0;
         break;
         }
       case tRES:{
         jj_consume_token(tRES);
+operador2 = 1;
         break;
         }
       default:
@@ -1063,6 +1113,16 @@ at.name = at1.name;
                 at.isConst = at1.isConst;
                 at.isVar = at1.isVar;
                 at.isVecComp = at1.isVecComp;
+
+                // ---------------------------------------------------------------------------
+                at.code = at1.code;
+                switch(operador2) {
+                        case 1:
+                                at.code.addInst(OpCode.NGI); // Si nos llega un 5, entonces devolvemos un -5
+                                break;
+                        default: // Es un simbolo '+' o no se ha especificado un simbolo delante.
+                                break;
+                }
     label_11:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -1078,10 +1138,12 @@ at.name = at1.name;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case tSUM:{
         jj_consume_token(tSUM);
+operador = 0;
         break;
         }
       case tRES:{
         jj_consume_token(tRES);
+operador = 1;
         break;
         }
       default:
@@ -1099,6 +1161,17 @@ if (at1.type != Symbol.Types.INT) {
                 if ((at2.type != at1.type) || (at2.type != Symbol.Types.INT)){
                         // error: Los tipos de terminos no coinciden o at2 no es entero
                         ErrorSemantico.deteccion("Terminos no coinciden, segundo temrino no es un entero");
+                }
+
+                at.code.addBlock(at1.code);
+                at.code.addBlock(at2.code);
+                switch(operador) {
+                        case 0:
+                                at.code.addInst(OpCode.PLUS);
+                                break;
+                        case 1:
+                                at.code.addInst(OpCode.SBT);
+                                break;
                 }
     }
 }
@@ -1122,8 +1195,7 @@ at.name = at1.name; at.type = at1.type; at.code = at1.code; /*at = at1;*/
         break label_12;
       }
       operador_multiplicativo(operador);
-System.out.println("Operador multiplicativo: " + operador.get(0));
-                        // Aparece una operación de mul, div o mod, por lo tanto comprobamos
+// Aparece una operación de mul, div o mod, por lo tanto comprobamos
                         // que at1 sea entero.
                         if (at1.type != Symbol.Types.INT) {
                                 // error: El primer factor no es un entero
@@ -1135,10 +1207,23 @@ System.out.println("Operador multiplicativo: " + operador.get(0));
                                 // error: Los tipos de factores no coinciden o at2 no es entero
                                 ErrorSemantico.deteccion("Los tipos de factores no coinciden");
                         }
+
+                        // -------------------------------------------------------------------------
+                        // MUL = 0; MOD = 1; DIV = 2;
+
                         at.code.addBlock(at1.code);
                         at.code.addBlock(at2.code);
-                        //at.code.addInst(OpCode.);
-
+                        switch(operador.get(0)) {
+                                case 0:
+                                        at.code.addInst(OpCode.TMS);
+                                        break;
+                                case 1:
+                                        at.code.addInst(OpCode.MOD);
+                                        break;
+                                case 2:
+                                        at.code.addInst(OpCode.DIV);
+                                        break;
+                        }
     }
 }
 

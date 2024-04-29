@@ -937,7 +937,12 @@ void operador_relacional(ArrayList<Integer> operador) :
 	
 }
 {
-	<tEQU> | <tLT> | <tGT> | <tLE> | <tGE> | <tDIF>
+	<tEQU> {operador.add(0);} 
+| 	<tLT> {operador.add(1);}
+| 	<tGT> {operador.add(2);}
+| 	<tLE> {operador.add(3);}
+| 	<tGE> {operador.add(4);}
+| 	<tDIF> {operador.add(5);}
 }
 	
 
@@ -954,7 +959,7 @@ void expresion_simple(Attributes at) :
 	Integer operador2 =  -1;
 }
 {
-	( <tSUM> { operador2 = 0} |	<tRES> { operador2 = 1} )? 
+	( <tSUM> { operador2 = 0;} |	<tRES> { operador2 = 1;} )? 
 	termino(at1) {
 		at.name = at1.name;
 		at.type = at1.type;
