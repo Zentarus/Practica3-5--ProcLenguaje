@@ -530,9 +530,7 @@ void cabecera_funcion(Attributes at) :
 		}
 		at2.parList = at.parList;
 	}
-	<tPARENTESIS_OPEN>
-	( lista_parametros_funcion_o_proc(at2) )?
-	<tPARENTESIS_CLOSE>
+	( <tPARENTESIS_OPEN> lista_parametros_funcion_o_proc(at2) <tPARENTESIS_CLOSE> ) ?
 	<tRETURN> tipo_variable(at1) <tIS>
 	{
 		try {
