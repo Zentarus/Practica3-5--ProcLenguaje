@@ -1,7 +1,7 @@
 --Ejemplo de cambio de bases numéricas
 procedure cambio_base is
 	num, base: integer;
-	enb: integer;
+	enB: integer;
 ------------------------------------------------------
 function b_dec(n,b: integer) return integer is
 	uc: integer;
@@ -31,7 +31,7 @@ end;
 ------------------------------------------------------
 begin
 	num := 4;
-	Base := 2;
+	base := 2;
 
 	put("Este programa convierte n=",num," a base b=", base);
 	put_line(", y luego efectúa la conversión inversa.");

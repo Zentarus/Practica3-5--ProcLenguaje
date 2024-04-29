@@ -2,6 +2,7 @@ package lib.attributes;
 
 import lib.symbolTable.Symbol;
 import java.util.ArrayList;
+import lib.tools.codeGeneration.*;
 
 public class Attributes implements Cloneable {
     public Symbol.Types type;
@@ -10,6 +11,7 @@ public class Attributes implements Cloneable {
     public ArrayList<Integer> intList;
     public Boolean isArray, isVar, isVecComp, isConst;
     public String name;
+    public CodeBlock code;
 
     public Attributes() {
         type = Symbol.Types.UNDEFINED;
@@ -21,8 +23,7 @@ public class Attributes implements Cloneable {
         isVecComp = false;
         isConst = false;
         name = "";
-        // exps?
-        // Se va a necesitar añadir un atributo CodeBlock 'code' (practica4)
+        code = new CodeBlock();
         // Completar y añadirlos al toString
     }
 

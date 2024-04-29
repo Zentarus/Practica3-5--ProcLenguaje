@@ -7,7 +7,7 @@
 // Asignatura: Procesadores de Lenguajes, curso 2021-2022
 //*****************************************************************
 
-package lib.tools;
+package lib.tools.exceptions;
 
 import java.util.*;
 import traductor.*;

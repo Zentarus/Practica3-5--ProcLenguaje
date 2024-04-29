@@ -7,6 +7,8 @@ import lib.symbolTable.exceptions.*;
 import lib.attributes.*;
 import java.util.ArrayList;
 import lib.errores.ErrorSemantico;
+import lib.tools.codeGeneration.CodeBlock;
+import lib.tools.codeGeneration.PCodeInstruction.OpCode;
 
 //...
 
@@ -60,6 +62,7 @@ public class alike implements alikeConstants {
 
    public static void main(String[] args) {
            alike parser = null;
+           Attributes at = new Attributes();
 
                 st = new SymbolTable();
         initSymbolTable();
@@ -72,8 +75,8 @@ public class alike implements alikeConstants {
                            parser = new alike(new java.io.FileInputStream(args[0]));
                    }
                    //Programa es el símbolo inicial de la gramática
-                   parser.Programa();
-                   //...
+                   parser.Programa(at);
+                   // hacer print de at.code
                    System.out.println("***** An\u00e1lisis terminado con \u00e9xito *****");
            }
            catch (java.io.FileNotFoundException e) {
@@ -114,13 +117,13 @@ public class alike implements alikeConstants {
 }*/
   static final public 
 
-void Programa() throws ParseException {Token t;
-        Attributes at = new Attributes();
+void Programa(Attributes at) throws ParseException {Token t;
+        Attributes at1 = new Attributes();
     jj_consume_token(tPROCEDURE);
     t = jj_consume_token(tID);
 Symbol s;
-                at.parList = new ArrayList<Symbol>();
-                s = new SymbolProcedure(t.image,at.parList,true);
+                at1.parList = new ArrayList<Symbol>();
+                s = new SymbolProcedure(t.image,at1.parList,true);
                 try {
                         st.insertSymbol(s);
                 }
@@ -982,8 +985,7 @@ if (at1.type == at3.type) {
                 }
                 at.isVar = false;
                 at.isVecComp = false;
-                at.isConst = true; // Me imagino que True y False son constantes no?
-
+                at.isConst = true;
       break;
       }
     default:
@@ -1103,8 +1105,9 @@ if (at1.type != Symbol.Types.INT) {
 
 /* CREO QUE COMPLETADA */
   static final public void termino(Attributes at) throws ParseException {Attributes at1 = new Attributes(), at2 = new Attributes();
+        ArrayList<Integer> operador = new ArrayList<Integer>();
     factor(at1);
-at.name = at1.name; at.type = at1.type; /*System.out.println("Tipo: " + at.type);*/
+at.name = at1.name; at.type = at1.type; at.code = at1.code; /*at = at1;*/
     label_12:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -1118,8 +1121,9 @@ at.name = at1.name; at.type = at1.type; /*System.out.println("Tipo: " + at.type)
         jj_la1[34] = jj_gen;
         break label_12;
       }
-      operador_multiplicativo();
-// Aparece una operación de mul, div o mod, por lo tanto comprobamos
+      operador_multiplicativo(operador);
+System.out.println("Operador multiplicativo: " + operador.get(0));
+                        // Aparece una operación de mul, div o mod, por lo tanto comprobamos
                         // que at1 sea entero.
                         if (at1.type != Symbol.Types.INT) {
                                 // error: El primer factor no es un entero
@@ -1131,22 +1135,28 @@ at.name = at1.name; at.type = at1.type; /*System.out.println("Tipo: " + at.type)
                                 // error: Los tipos de factores no coinciden o at2 no es entero
                                 ErrorSemantico.deteccion("Los tipos de factores no coinciden");
                         }
+                        at.code.addBlock(at1.code);
+                        at.code.addBlock(at2.code);
+                        //at.code.addInst(OpCode.);
+
     }
 }
 
-/* COMPLETADA -- NO HAY QUE PASAR NADA NO? */
-  static final public void operador_multiplicativo() throws ParseException {
+  static final public void operador_multiplicativo(ArrayList<Integer> operador) throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case tMUL:{
       jj_consume_token(tMUL);
+operador.add(0);
       break;
       }
     case tMOD:{
       jj_consume_token(tMOD);
+operador.add(1);
       break;
       }
     case tDIV:{
       jj_consume_token(tDIV);
+operador.add(2);
       break;
       }
     default:
@@ -1173,9 +1183,13 @@ at.name = at1.name; at.type = at1.type; /*System.out.println("Tipo: " + at.type)
     case tNOT:{
       jj_consume_token(tNOT);
       primario(at);
-if (at.type != Symbol.Types.BOOL){
+// ----------------------- Semántico ---------------------------
+                if (at.type != Symbol.Types.BOOL){
                         ErrorSemantico.deteccion("Debe ser booleano <factor>");
                 }
+                // ------------------------- Código ----------------------------
+                at.code.addBlock(at.code);
+                at.code.addInst(OpCode.NGB);
       break;
       }
     default:
@@ -1232,7 +1246,22 @@ if (at.type != Symbol.Types.CHAR) {
                 try {
                         s = st.getSymbol(t.image);
                         if (s instanceof SymbolArray) {
+                                // comprobar indice acceso de vector, habrá que obtener el rango del vector y comparar con el indice accedido
+                                // comprobar también que el indice sea un entero positivo?
                                 at.isVecComp = true;
+
+                                if(ats.size() == 0) {
+                                        ErrorSemantico.deteccion("No se ha especificado el indice del vector a acceder");
+                                }
+                                else{
+                                        // Si lo hay, sólo habrá 1 atributo en el array de atributos si se llama a una componente de vector
+                                        at.isVecComp = true;
+                                        Attributes atA;
+                                        atA = ats.get(0);
+                                        if(atA.type != Symbol.Types.INT){
+                                                ErrorSemantico.deteccion("El indice de acceso al vector debe ser de tipo INT");
+                                        }
+                                }
                         }
                         else if ((s instanceof SymbolProcedure)){
 
@@ -1282,7 +1311,6 @@ if (at.type != Symbol.Types.CHAR) {
                 }
                 at.isVar = false;
                 at.name = t.image;
-                //at.type = ((SymbolFunction)s).returnType; esto daba problemas
                 // Procesar la lista de parametros reales ...
                 //...
 
@@ -1291,7 +1319,6 @@ if (at.type != Symbol.Types.CHAR) {
         case tID:{
           t = jj_consume_token(tID);
 //var. o func. sin pars 
-                //¿No faltaria añadirla a la tabla semántica?
                 Symbol s = null;
                 try {
                         s = st.getSymbol(t.image);

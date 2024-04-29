@@ -6,6 +6,8 @@ import lib.symbolTable.exceptions.*;
 import lib.attributes.*;
 import java.util.ArrayList;
 import lib.errores.ErrorSemantico;
+import lib.tools.codeGeneration.CodeBlock;
+import lib.tools.codeGeneration.PCodeInstruction.OpCode;
 
 /** Token Manager. */
 @SuppressWarnings ("unused")
