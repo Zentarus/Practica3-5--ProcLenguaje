@@ -1021,7 +1021,22 @@ void primario(Attributes at) :
 		try {
 			s = st.getSymbol(t.image);
 			if (s instanceof SymbolArray) {
+				// comprobar indice acceso de vector, habrá que obtener el rango del vector y comparar con el indice accedido
+				// comprobar también que el indice sea un entero positivo?
 				at.isVecComp = true;
+
+				if(ats.size() == 0) {
+					ErrorSemantico.deteccion("No se ha especificado el indice del vector a acceder");
+				}
+				else{
+					// Si lo hay, sólo habrá 1 atributo en el array de atributos si se llama a una componente de vector
+					at.isVecComp = true;
+					Attributes atA; 
+					atA = ats.get(0);
+					if(atA.type != Symbol.Types.INT){
+						ErrorSemantico.deteccion("El indice de acceso al vector debe ser de tipo INT");
+					}
+				}
 			}
 			else if ((s instanceof SymbolProcedure)){
 
@@ -1076,7 +1091,6 @@ void primario(Attributes at) :
 		//...
 	}
 |	t = <tID> {             //var. o func. sin pars 
-		//¿No faltaria añadirla a la tabla semántica?
 		Symbol s = null;
 		try {
 			s = st.getSymbol(t.image);
