@@ -595,17 +595,19 @@ Symbol s = null, s2 = null;
                 //System.out.println("----------->" + at2.name);
                 try {
                         s = st.getSymbol(at1.name);
-                        if (at2.name != "") {
+
+                        // Evitamos también que entre si los nombres son los de las ctes, porque al intentar obtener el símbolo dara error
+                        if (at2.name != "" && at2.name != "TRUE" && at2.name != "FALSE" && at2.name != "CONST_INT"  && at2.name != "CONST_CHAR" & at2.name != "CONST_STRING") {
                                 s2 = st.getSymbol(at2.name);
                                 if (s2 instanceof SymbolProcedure) {
-                                        ErrorSemantico.deteccion("No se puede asignar un procedimiento");
+                                        ErrorSemantico.deteccion("No se puede asignar un procedimiento, no devuelve nada");
                                 }
                                 else if (s2 instanceof SymbolFunction){
                                         // Si variable es escalar y tipos at1 y at2 iguales -> OK
                                         // Doy por asumido que escalares agrupa tmb char, string y bool
                                         if(!((at1.type == Symbol.Types.INT || at1.type == Symbol.Types.CHAR ||
                                         at1.type == Symbol.Types.BOOL) && at1.type == ((SymbolFunction)s2).returnType)){
-                                                ErrorSemantico.deteccion("Asignacion con tipos distintos");
+                                                ErrorSemantico.deteccion("1.Asignacion con tipos distintos: " + at1.type + ":= " + ((SymbolFunction)s2).returnType);
                                         }
                                         // Si es una componente de vector y tipos at1 y at2 iguales -> OK
                                         if(at1.isVecComp && (((SymbolArray) s).baseType != ((SymbolFunction)s2).returnType)){
@@ -618,12 +620,13 @@ Symbol s = null, s2 = null;
                         if (s instanceof SymbolFunction || s instanceof SymbolProcedure) {
                                 ErrorSemantico.deteccion("Funcion o procedimiento no son asignables");
                         }
-                        else {
+                        // Para el caso de que no se asigne una función, sino cualquier otro valor escalar.
+                        else if (!(s2 instanceof SymbolFunction || s2 instanceof SymbolProcedure)){
                                 // Si variable es escalar y tipos at1 y at2 iguales -> OK
                                 // Doy por asumido que escalares agrupa tmb char, string y bool
                                 if(!((at1.type == Symbol.Types.INT || at1.type == Symbol.Types.CHAR ||
                             at1.type == Symbol.Types.BOOL) && at1.type == at2.type)){
-                                        ErrorSemantico.deteccion("Asignacion con tipos distintos");
+                                        ErrorSemantico.deteccion("2.Asignacion con tipos distintos: " + at1.type + ":= " + at2.type);
                                 }
                                 // Si es una componente de vector y tipos at1 y at2 iguales -> OK
                                 if(at1.isVecComp && (((SymbolArray) s).baseType != at2.type)){
@@ -634,7 +637,7 @@ Symbol s = null, s2 = null;
 
                 }
                 catch (SymbolNotFoundException e){
-                        ErrorSemantico.deteccion(e, at1.name);
+                        ErrorSemantico.deteccion(e, ("at1.name: " + at1.name + ", at2.name: " + at2.name));
                 }
       break;
       }
@@ -1263,6 +1266,7 @@ operador.add(2);
     case tPARENTESIS_OPEN:
     case tID:{
       primario(at);
+
       break;
       }
     case tNOT:{
@@ -1418,14 +1422,16 @@ if (at.type != Symbol.Types.CHAR) {
           }
         case tCONST_INT:{
           jj_consume_token(tCONST_INT);
-at.isVar = false;
+at.name = "CONST_INT";
+                at.isVar = false;
                 at.type = Symbol.Types.INT;
                 at.isConst = true;
           break;
           }
         case tCONST_CHAR:{
           jj_consume_token(tCONST_CHAR);
-at.isVar = false;
+at.name = "CONST_CHAR";
+                at.isVar = false;
                 at.type = Symbol.Types.CHAR;
                 at.isConst = true;
           break;
@@ -1433,6 +1439,7 @@ at.isVar = false;
         case tCONST_STRING:{
           jj_consume_token(tCONST_STRING);
 //rn sf.primario_8(t); 
+                at.name = "CONST_STRING";
                 at.isVar = false;
                 at.type = Symbol.Types.STRING;
                 at.isConst = true;
@@ -1440,14 +1447,16 @@ at.isVar = false;
           }
         case tTRUE:{
           jj_consume_token(tTRUE);
-at.isVar = false;
+at.name = "TRUE";
+                at.isVar = false;
                 at.type = Symbol.Types.BOOL;
                 at.isConst = true;
           break;
           }
         case tFALSE:{
           jj_consume_token(tFALSE);
-at.isVar = false;
+at.name = "FALSE";
+                at.isVar = false;
                 at.type = Symbol.Types.BOOL;
                 at.isConst = true;
           break;

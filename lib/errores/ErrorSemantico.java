@@ -5,13 +5,18 @@ import lib.symbolTable.exceptions.SymbolNotFoundException;
 
 //  Puede recibir un Token, mensaje de excepción, un atributo etc...
 public class ErrorSemantico {
+
+    public static final String ANSI_RESET = "\u001B[0m";
+
+    public static final String ANSI_RED = "\u001B[31m";
+
     /**
      * Función deteccion que imprime un mensaje de error.
      *
      * @param mensaje String que se imprimirá como mensaje de error.
      */
     public static void deteccion(String mensaje) {
-        System.err.println(mensaje);
+        System.err.println(ANSI_RED + mensaje + ANSI_RESET);
     }
 
     /**
@@ -22,9 +27,9 @@ public class ErrorSemantico {
      */
     public static void deteccion(Exception excepcion, String token) {
         if (excepcion instanceof AlreadyDefinedSymbolException) {
-            System.err.println("Simbolo ya definido: " + token);
+            System.err.println(ANSI_RED + "Simbolo ya definido: " + token + ANSI_RESET);
         } else if (excepcion instanceof SymbolNotFoundException) {
-            System.err.println("Simbolo no encontrado: " + token);
+            System.err.println(ANSI_RED + "Simbolo no encontrado: " + token + ANSI_RESET);
         }
     }
 }
