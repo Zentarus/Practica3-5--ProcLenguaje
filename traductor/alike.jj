@@ -490,8 +490,8 @@ void cabecera_procedimiento(Attributes at) :
 		
 		at2.parList = at1.parList;
 	}
-	<tPARENTESIS_OPEN>
-	(( lista_parametros_funcion_o_proc(at2) )?)
+	(<tPARENTESIS_OPEN>
+	( lista_parametros_funcion_o_proc(at2) )
 	{
 		try {
 			Symbol aux = st.getSymbol(t.image);
@@ -507,7 +507,7 @@ void cabecera_procedimiento(Attributes at) :
 		
 		
 	}
-	<tPARENTESIS_CLOSE>
+	<tPARENTESIS_CLOSE>)?
 	<tIS>
 }
 
@@ -872,6 +872,7 @@ void expresion(Attributes at) :
 {	
 	relacion(at1) {
 		at.type = at1.type;
+		at.isVecComp = at1.isVecComp;
 		at.name = at1.name;
 	}
 	(((<tAND> {operador = 0;} | <tOR> {operador = 1;}) 
@@ -905,10 +906,11 @@ void lista_una_o_mas_exps(ArrayList<Attributes> ats):
 	Attributes at1 = new Attributes(), at2 = new Attributes();
 }
 {
-	expresion(at1) {ats.add(at1);} 
+expresion(at1) {ats.add(at1); /*System.out.println(ANSI_YELLOW + at1.name + ", " + at1.type + ANSI_RESET);*/} 
 	(<tCOMA> 
 	expresion(at2) {
 		ats.add(at2);
+		/*System.out.println(ANSI_YELLOW + at1.name + ", " + at1.type + ANSI_RESET);*/
 	}
 	)*
 	
@@ -1384,13 +1386,13 @@ void primario(Attributes at) :
 				// comprobar indice acceso de vector, habrá que obtener el rango del vector y comparar con el indice accedido
 				// comprobar también que el indice sea un entero positivo?
 				at.isVecComp = true;
+				at.type = ((SymbolArray)s).baseType;
 
 				if(ats.size() == 0) {
 					ErrorSemantico.deteccion("No se ha especificado el indice del vector a acceder");
 				}
 				else{
 					// Si lo hay, sólo habrá 1 atributo en el array de atributos si se llama a una componente de vector
-					at.isVecComp = true;
 					Attributes atA; 
 					atA = ats.get(0);
 					if(atA.type != Symbol.Types.INT){
@@ -1405,14 +1407,28 @@ void primario(Attributes at) :
 				}
 				else {
 					for (int i = 0; i < ats.size(); i++) {
-						Attributes atP;
-						Symbol sP;
+						Attributes atP;	// HAY QUE OBTENER SU SIMBOLO PARA COMPROBAR TIPOS SI ES COMPONENTE VECTOR O FUNCIÓN (lo mismo que en termino y factor)
+						Symbol sP; 
 						atP = ats.get(i);
 						sP = ((SymbolProcedure)s).parList.get(i);
 
-						if (atP.type != sP.type) {
-							ErrorSemantico.deteccion("Los tipos de los parametros no coinciden");
-							break;
+						if(sP instanceof SymbolFunction){
+							if (atP.type != ((SymbolFunction)sP).returnType) {
+								ErrorSemantico.deteccion("Los tipos de los parametros no coinciden: " + atP.type + "|" + ((SymbolFunction)sP).returnType + "- Procedure1");
+								break;
+							}
+						}
+						else if(sP instanceof SymbolArray){
+							if (atP.type != ((SymbolArray)sP).baseType) {
+								ErrorSemantico.deteccion("Los tipos de los parametros no coinciden: " + atP.type + "|" + ((SymbolArray)sP).baseType + "- Procedure2");
+								break;
+							}
+						}
+						else{
+							if (atP.type != sP.type) {
+								ErrorSemantico.deteccion("Los tipos de los parametros no coinciden: " + atP.type + "|" + sP.type + "- Procedure3");
+								break;
+							}
 						}
 					}
 				}
@@ -1424,14 +1440,28 @@ void primario(Attributes at) :
 				}
 				else {
 					for (int i = 0; i < ats.size(); i++) {
-						Attributes atF;
+						Attributes atF; // HAY QUE OBTENER SU SIMBOLO PARA COMPROBAR TIPOS SI ES COMPONENTE VECTOR O FUNCIÓN (lo mismo que en termino y factor)
 						Symbol sF;
 						atF = ats.get(i);
 						sF = ((SymbolFunction)s).parList.get(i);
 
-						if (atF.type != sF.type) {
-							ErrorSemantico.deteccion("Los tipos de los parametros no coinciden");
-							break;
+						if(sF instanceof SymbolFunction){
+							if (atF.type != ((SymbolFunction)sF).returnType) {
+								ErrorSemantico.deteccion("Los tipos de los parametros no coinciden - Function1");
+								break;
+							}
+						}
+						else if(sF instanceof SymbolArray){
+							if (atF.type != ((SymbolArray)sF).baseType) {
+								ErrorSemantico.deteccion("Los tipos de los parametros no coinciden - Function2");
+								break;
+							}
+						}
+						else{
+							if (atF.type != sF.type) {
+								ErrorSemantico.deteccion("Los tipos de los parametros no coinciden - Function3");
+								break;
+							}
 						}
 					}
 					at.type = ((SymbolFunction)s).returnType;

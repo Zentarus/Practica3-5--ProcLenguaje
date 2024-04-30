@@ -455,16 +455,10 @@ Symbol s;
                 }
 
                 at2.parList = at1.parList;
-    jj_consume_token(tPARENTESIS_OPEN);
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-    case tID:{
+    case tPARENTESIS_OPEN:{
+      jj_consume_token(tPARENTESIS_OPEN);
       lista_parametros_funcion_o_proc(at2);
-      break;
-      }
-    default:
-      jj_la1[14] = jj_gen;
-      ;
-    }
 try {
                         Symbol aux = st.getSymbol(t.image);
                         if (aux instanceof SymbolProcedure) {
@@ -476,7 +470,13 @@ try {
                 catch (SymbolNotFoundException e) {
                         ErrorSemantico.deteccion(e,t.image);
                 }
-    jj_consume_token(tPARENTESIS_CLOSE);
+      jj_consume_token(tPARENTESIS_CLOSE);
+      break;
+      }
+    default:
+      jj_la1[14] = jj_gen;
+      ;
+    }
     jj_consume_token(tIS);
 }
 
@@ -941,6 +941,7 @@ if (!((at.type == Symbol.Types.INT) || (at.type == Symbol.Types.BOOL) || (at.typ
         Integer operador = -1;
     relacion(at1);
 at.type = at1.type;
+                at.isVecComp = at1.isVecComp;
                 at.name = at1.name;
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case tAND:
@@ -1002,7 +1003,7 @@ if (!((at1.type == at2.type) && (at1.type == Symbol.Types.BOOL))) {
 
   static final public void lista_una_o_mas_exps(ArrayList<Attributes> ats) throws ParseException {Attributes at1 = new Attributes(), at2 = new Attributes();
     expresion(at1);
-ats.add(at1);
+ats.add(at1); /*System.out.println(ANSI_YELLOW + at1.name + ", " + at1.type + ANSI_RESET);*/
     label_10:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -1017,6 +1018,8 @@ ats.add(at1);
       jj_consume_token(tCOMA);
       expresion(at2);
 ats.add(at2);
+                /*System.out.println(ANSI_YELLOW + at1.name + ", " + at1.type + ANSI_RESET);*/
+
     }
 }
 
@@ -1605,13 +1608,13 @@ if (at.type != Symbol.Types.CHAR) {
                                 // comprobar indice acceso de vector, habrá que obtener el rango del vector y comparar con el indice accedido
                                 // comprobar también que el indice sea un entero positivo?
                                 at.isVecComp = true;
+                                at.type = ((SymbolArray)s).baseType;
 
                                 if(ats.size() == 0) {
                                         ErrorSemantico.deteccion("No se ha especificado el indice del vector a acceder");
                                 }
                                 else{
                                         // Si lo hay, sólo habrá 1 atributo en el array de atributos si se llama a una componente de vector
-                                        at.isVecComp = true;
                                         Attributes atA;
                                         atA = ats.get(0);
                                         if(atA.type != Symbol.Types.INT){
@@ -1631,9 +1634,24 @@ if (at.type != Symbol.Types.CHAR) {
                                                 atP = ats.get(i);
                                                 sP = ((SymbolProcedure)s).parList.get(i);
 
-                                                if (atP.type != sP.type) {
-                                                        ErrorSemantico.deteccion("Los tipos de los parametros no coinciden");
-                                                        break;
+                                                if(sP instanceof SymbolFunction){
+                                                        if (atP.type != ((SymbolFunction)sP).returnType) {
+                                                                ErrorSemantico.deteccion("Los tipos de los parametros no coinciden: " + atP.type + "|" + ((SymbolFunction)sP).returnType + "- Procedure1");
+                                                                break;
+                                                        }
+                                                }
+                                                else if(sP instanceof SymbolArray){
+                                                        if (atP.type != ((SymbolArray)sP).baseType) {
+                                                                System.out.println(ANSI_YELLOW + atP.name + ANSI_RESET);
+                                                                ErrorSemantico.deteccion("Los tipos de los parametros no coinciden: " + atP.type + "|" + ((SymbolArray)sP).baseType + "- Procedure2");
+                                                                break;
+                                                        }
+                                                }
+                                                else{
+                                                        if (atP.type != sP.type) {
+                                                                ErrorSemantico.deteccion("Los tipos de los parametros no coinciden: " + atP.type + "|" + sP.type + "- Procedure3");
+                                                                break;
+                                                        }
                                                 }
                                         }
                                 }
@@ -1650,9 +1668,23 @@ if (at.type != Symbol.Types.CHAR) {
                                                 atF = ats.get(i);
                                                 sF = ((SymbolFunction)s).parList.get(i);
 
-                                                if (atF.type != sF.type) {
-                                                        ErrorSemantico.deteccion("Los tipos de los parametros no coinciden");
-                                                        break;
+                                                if(sF instanceof SymbolFunction){
+                                                        if (atF.type != ((SymbolFunction)sF).returnType) {
+                                                                ErrorSemantico.deteccion("Los tipos de los parametros no coinciden - Function1");
+                                                                break;
+                                                        }
+                                                }
+                                                else if(sF instanceof SymbolArray){
+                                                        if (atF.type != ((SymbolArray)sF).baseType) {
+                                                                ErrorSemantico.deteccion("Los tipos de los parametros no coinciden - Function2");
+                                                                break;
+                                                        }
+                                                }
+                                                else{
+                                                        if (atF.type != sF.type) {
+                                                                ErrorSemantico.deteccion("Los tipos de los parametros no coinciden - Function3");
+                                                                break;
+                                                        }
                                                 }
                                         }
                                         at.type = ((SymbolFunction)s).returnType;
@@ -1777,10 +1809,10 @@ at.name = "FALSE";
 	   jj_la1_0 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1e00,0x0,0x9e00,0x9e00,0x0,0x0,0x0,0x0,0x80000,0x0,0x0,0x80374000,0x80374000,0x80374000,0x80374000,0x0,0x0,0x0,0x0,0xfc00000,0xfc00000,0x300000,0x300000,0x300000,0x300000,0x70000000,0x70000000,0x80070000,0x0,0x70000,};
 	}
 	private static void jj_la1_init_1() {
-	   jj_la1_1 = new int[] {0x0,0xc00,0xc00,0xc00,0x0,0x0,0x2000000,0x0,0x0,0x0,0x2000,0x0,0x0,0x10000000,0x0,0x80000000,0x80000000,0x0,0x8,0x10,0x80fe0344,0x80fc0344,0x80fc0344,0x80fe0344,0x3,0x3,0x3,0x2000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x80c00300,0x80c00000,0x300,};
+	   jj_la1_1 = new int[] {0x0,0xc00,0xc00,0xc00,0x0,0x0,0x2000000,0x0,0x0,0x0,0x2000,0x0,0x0,0x10000000,0x80000000,0x80000000,0x80000000,0x0,0x8,0x10,0x80fe0344,0x80fc0344,0x80fc0344,0x80fe0344,0x3,0x3,0x3,0x2000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x80c00300,0x80c00000,0x300,};
 	}
 	private static void jj_la1_init_2() {
-	   jj_la1_2 = new int[] {0x2,0x0,0x0,0x0,0x2,0x2,0x0,0x2,0x2,0x0,0x0,0x0,0x0,0x0,0x2,0x0,0x0,0x0,0x0,0x0,0x2,0x2,0x2,0x2,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x2,0x0,0x2,};
+	   jj_la1_2 = new int[] {0x2,0x0,0x0,0x0,0x2,0x2,0x0,0x2,0x2,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x2,0x2,0x2,0x2,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x2,0x0,0x2,};
 	}
   static final private JJCalls[] jj_2_rtns = new JJCalls[1];
   static private boolean jj_rescan = false;
