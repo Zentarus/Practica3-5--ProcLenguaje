@@ -454,7 +454,7 @@ Symbol s;
                         ErrorSemantico.deteccion(e,t.image);
                 }
 
-                at2.parList = at1.parList;
+                at2.parList = at.parList;
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case tPARENTESIS_OPEN:{
       jj_consume_token(tPARENTESIS_OPEN);
@@ -465,6 +465,7 @@ try {
                                 //System.err.println("Procedimiento");
                                 SymbolProcedure procedure = (SymbolProcedure) aux;
                                 procedure.parList = at2.parList;
+                                //System.out.println(ANSI_YELLOW + "CABECERA_PROCEDIMIENTO: " + procedure.parList.size() + ANSI_RESET);
                         }
                 }
                 catch (SymbolNotFoundException e) {
@@ -1213,7 +1214,7 @@ if((at1.name != "CONST_INT") && (at2.name != "CONST_INT")){
                                         if (s2 instanceof SymbolArray){
                                                 if(((SymbolArray)s2).baseType != Symbol.Types.INT){
                                                         // error: El primer factor no es un entero
-                                                        ErrorSemantico.deteccion("El segundo termino no es un entero (tipos incompatibles)");
+                                                        ErrorSemantico.deteccion("El segundo termino no es un entero (tipos incompatibles - 1)");
                                                 }
                                                 if (s1 instanceof SymbolArray){
                                                         if(((SymbolArray)s1).baseType != ((SymbolArray)s2).baseType){
@@ -1229,7 +1230,7 @@ if((at1.name != "CONST_INT") && (at2.name != "CONST_INT")){
                                         else if (s2 instanceof SymbolFunction){
                                                 if(((SymbolFunction)s2).returnType != Symbol.Types.INT){
                                                         // error: El primer factor no es un entero
-                                                        ErrorSemantico.deteccion("El segundo termino no es un entero (tipos incompatibles)");
+                                                        ErrorSemantico.deteccion("El segundo termino no es un entero (tipos incompatibles - 2)");
                                                 }
                                                 if (s1 instanceof SymbolArray){
                                                         if(((SymbolArray)s1).baseType != ((SymbolFunction)s2).returnType){
@@ -1245,7 +1246,7 @@ if((at1.name != "CONST_INT") && (at2.name != "CONST_INT")){
                                         else {
                                                 if(at2.type != Symbol.Types.INT){
                                                         // error: El primer factor no es un entero
-                                                        ErrorSemantico.deteccion("El segundo termino no es un entero (tipos incompatibles)");
+                                                        ErrorSemantico.deteccion("El segundo termino no es un entero (tipos incompatibles - 3)");
                                                 }
                                                 if (s1 instanceof SymbolArray){
                                                         if(((SymbolArray)s1).baseType != at2.type){
@@ -1625,12 +1626,14 @@ if (at.type != Symbol.Types.CHAR) {
                         else if ((s instanceof SymbolProcedure)){
 
                                 if(ats.size() != ((SymbolProcedure)s).parList.size()) {
-                                        ErrorSemantico.deteccion("Numero incorrecto de parametros");
+                                        System.out.println(ANSI_YELLOW + ats.size() + ANSI_RESET);
+                                        System.out.println(ANSI_YELLOW + ((SymbolProcedure)s).parList.size() + ANSI_RESET);
+                                        ErrorSemantico.deteccion("Numero incorrecto de parametros -");
                                 }
                                 else {
                                         try {
                                                 for (int i = 0; i < ats.size(); i++) {
-                                                        Attributes atP; // HAY QUE OBTENER SU SIMBOLO PARA COMPROBAR TIPOS SI ES COMPONENTE VECTOR O FUNCIÓN (lo mismo que en termino y factor)
+                                                        Attributes atP;
                                                         Symbol sP;
                                                         atP = ats.get(i);
                                                         sP = ((SymbolProcedure)s).parList.get(i);
@@ -1701,7 +1704,7 @@ if (at.type != Symbol.Types.CHAR) {
                                 else {
                                         try {
                                                 for (int i = 0; i < ats.size(); i++) {
-                                                        Attributes atF; // HAY QUE OBTENER SU SIMBOLO PARA COMPROBAR TIPOS SI ES COMPONENTE VECTOR O FUNCIÓN (lo mismo que en termino y factor)
+                                                        Attributes atF;
                                                         Symbol sF;
                                                         atF = ats.get(i);
                                                         sF = ((SymbolFunction)s).parList.get(i);
@@ -1712,19 +1715,19 @@ if (at.type != Symbol.Types.CHAR) {
                                                                 if(sF instanceof SymbolFunction){
                                                                         if (symbol_atF instanceof SymbolFunction){
                                                                                 if (((SymbolFunction)symbol_atF).returnType != ((SymbolFunction)sF).returnType) {
-                                                                                        ErrorSemantico.deteccion("Los tipos de los parametros no coinciden: " + ((SymbolFunction)symbol_atF).returnType + "|" + ((SymbolFunction)sF).returnType + "- Procedure1.1");
+                                                                                        ErrorSemantico.deteccion("Los tipos de los parametros no coinciden: " + ((SymbolFunction)symbol_atF).returnType + "|" + ((SymbolFunction)sF).returnType + "- Function1.1");
                                                                                         break;
                                                                                 }
                                                                         }
                                                                         else if (symbol_atF instanceof SymbolArray){
                                                                                 if (((SymbolArray)symbol_atF).baseType != ((SymbolFunction)sF).returnType) {
-                                                                                        ErrorSemantico.deteccion("Los tipos de los parametros no coinciden: " + ((SymbolArray)symbol_atF).baseType + "|" + ((SymbolFunction)sF).returnType + "- Procedure1.2");
+                                                                                        ErrorSemantico.deteccion("Los tipos de los parametros no coinciden: " + ((SymbolArray)symbol_atF).baseType + "|" + ((SymbolFunction)sF).returnType + "- Function1.2");
                                                                                         break;
                                                                                 }
                                                                         }
                                                                         else{
                                                                                 if (atF.type != ((SymbolFunction)sF).returnType) {
-                                                                                        ErrorSemantico.deteccion("Los tipos de los parametros no coinciden: " + atF.type + "|" + ((SymbolFunction)sF).returnType + "- Procedure1.3");
+                                                                                        ErrorSemantico.deteccion("Los tipos de los parametros no coinciden: " + atF.type + "|" + ((SymbolFunction)sF).returnType + "- Function1.3");
                                                                                         break;
                                                                                 }
                                                                         }
@@ -1732,19 +1735,19 @@ if (at.type != Symbol.Types.CHAR) {
                                                                 else if(sF instanceof SymbolArray){
                                                                         if (symbol_atF instanceof SymbolFunction){
                                                                                 if (((SymbolFunction)symbol_atF).returnType != ((SymbolArray)sF).baseType) {
-                                                                                        ErrorSemantico.deteccion("Los tipos de los parametros no coinciden: " + ((SymbolFunction)symbol_atF).returnType + "|" + ((SymbolArray)sF).baseType + "- Procedure2.1");
+                                                                                        ErrorSemantico.deteccion("Los tipos de los parametros no coinciden: " + ((SymbolFunction)symbol_atF).returnType + "|" + ((SymbolArray)sF).baseType + "- Function2.1");
                                                                                         break;
                                                                                 }
                                                                         }
                                                                         else if (symbol_atF instanceof SymbolArray){
                                                                                 if (((SymbolArray)symbol_atF).baseType != ((SymbolArray)sF).baseType) {
-                                                                                        ErrorSemantico.deteccion("Los tipos de los parametros no coinciden: " + ((SymbolArray)symbol_atF).baseType + "|" + ((SymbolArray)sF).baseType + "- Procedure2.2");
+                                                                                        ErrorSemantico.deteccion("Los tipos de los parametros no coinciden: " + ((SymbolArray)symbol_atF).baseType + "|" + ((SymbolArray)sF).baseType + "- Function2.2");
                                                                                         break;
                                                                                 }
                                                                         }
                                                                         else {
                                                                                 if (atF.type != ((SymbolArray)sF).baseType) {
-                                                                                        ErrorSemantico.deteccion("Los tipos de los parametros no coinciden: " + atF.type + "|" + ((SymbolArray)sF).baseType + "- Procedure2.3");
+                                                                                        ErrorSemantico.deteccion("Los tipos de los parametros no coinciden: " + atF.type + "|" + ((SymbolArray)sF).baseType + "- Function2.3");
                                                                                         break;
                                                                                 }
                                                                         }
@@ -1753,7 +1756,7 @@ if (at.type != Symbol.Types.CHAR) {
                                                         }
                                                         else{ // Casos en el que los atributos sean valores constantes (TRUE, FALSE, CONST_INT, ...)
                                                                 if (atF.type != sF.type) {
-                                                                        ErrorSemantico.deteccion("Los tipos de los parametros no coinciden: " + atF.type + "|" + sF.type + "- Procedure3");
+                                                                        ErrorSemantico.deteccion("Los tipos de los parametros no coinciden: " + atF.type + "|" + sF.type + "- Function3");
                                                                         break;
                                                                 }
                                                         }

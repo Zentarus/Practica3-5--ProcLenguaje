@@ -488,7 +488,7 @@ void cabecera_procedimiento(Attributes at) :
 			ErrorSemantico.deteccion(e,t.image);
 		}
 		
-		at2.parList = at1.parList;
+		at2.parList = at.parList;
 	}
 	(<tPARENTESIS_OPEN>
 	( lista_parametros_funcion_o_proc(at2) )
@@ -499,13 +499,12 @@ void cabecera_procedimiento(Attributes at) :
 				//System.err.println("Procedimiento");
 				SymbolProcedure procedure = (SymbolProcedure) aux;
 				procedure.parList = at2.parList;
+				//System.out.println(ANSI_YELLOW + "CABECERA_PROCEDIMIENTO: " + procedure.parList.size() + ANSI_RESET);
 			}
 		}
 		catch (SymbolNotFoundException e) {
 			ErrorSemantico.deteccion(e,t.image);
 		}
-		
-		
 	}
 	<tPARENTESIS_CLOSE>)?
 	<tIS>
@@ -1037,7 +1036,7 @@ void expresion_simple(Attributes at) :
 					if (s2 instanceof SymbolArray){
 						if(((SymbolArray)s2).baseType != Symbol.Types.INT){
 							// error: El primer factor no es un entero
-							ErrorSemantico.deteccion("El segundo termino no es un entero (tipos incompatibles)");
+							ErrorSemantico.deteccion("El segundo termino no es un entero (tipos incompatibles - 1)");
 						}
 						if (s1 instanceof SymbolArray){
 							if(((SymbolArray)s1).baseType != ((SymbolArray)s2).baseType){
@@ -1053,7 +1052,7 @@ void expresion_simple(Attributes at) :
 					else if (s2 instanceof SymbolFunction){
 						if(((SymbolFunction)s2).returnType != Symbol.Types.INT){
 							// error: El primer factor no es un entero
-							ErrorSemantico.deteccion("El segundo termino no es un entero (tipos incompatibles)");
+							ErrorSemantico.deteccion("El segundo termino no es un entero (tipos incompatibles - 2)");
 						}
 						if (s1 instanceof SymbolArray){
 							if(((SymbolArray)s1).baseType != ((SymbolFunction)s2).returnType){
@@ -1069,7 +1068,7 @@ void expresion_simple(Attributes at) :
 					else {
 						if(at2.type != Symbol.Types.INT){
 							// error: El primer factor no es un entero
-							ErrorSemantico.deteccion("El segundo termino no es un entero (tipos incompatibles)");
+							ErrorSemantico.deteccion("El segundo termino no es un entero (tipos incompatibles - 3)");
 						}
 						if (s1 instanceof SymbolArray){
 							if(((SymbolArray)s1).baseType != at2.type){
@@ -1403,7 +1402,9 @@ void primario(Attributes at) :
 			else if ((s instanceof SymbolProcedure)){
 
 				if(ats.size() != ((SymbolProcedure)s).parList.size()) {
-					ErrorSemantico.deteccion("Numero incorrecto de parametros");
+					System.out.println(ANSI_YELLOW + ats.size() + ANSI_RESET);
+					System.out.println(ANSI_YELLOW + ((SymbolProcedure)s).parList.size() + ANSI_RESET);
+					ErrorSemantico.deteccion("Numero incorrecto de parametros -");
 				}
 				else {
 					try {
