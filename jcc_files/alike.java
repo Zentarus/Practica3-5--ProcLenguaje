@@ -750,19 +750,22 @@ Symbol s = null, s2 = null;
                         }
                         // Para el caso de que no se asigne una función, sino cualquier otro valor escalar.
                         else if (!(s2 instanceof SymbolFunction || s2 instanceof SymbolProcedure)){
-                                // Si variable es escalar y tipos at1 y at2 iguales -> OK
-                                // Doy por asumido que escalares agrupa tmb char, string y bool
-                                if(!((at1.type == Symbol.Types.INT || at1.type == Symbol.Types.CHAR ||
-                            at1.type == Symbol.Types.BOOL) && at1.type == at2.type)){
-                                        ErrorSemantico.deteccion("2.Asignacion con tipos distintos: " + at1.type + ":= " + at2.type);
-                                }
                                 // Si es una componente de vector y tipos at1 y at2 iguales -> OK
-                                if(at1.isVecComp && (((SymbolArray) s).baseType != at2.type)){
-                                        System.out.println(at1.name);
-                                        ErrorSemantico.deteccion("La componente del vector no es del tipo del vector");
+                                if(s instanceof SymbolArray){
+                                        if(at1.isVecComp && (((SymbolArray) s).baseType != at2.type)){
+                                                System.out.println(at1.name);
+                                                ErrorSemantico.deteccion("La componente del vector no es del tipo del vector");
+                                        }
+                                }
+                                else{
+                                        // Si variable es escalar y tipos at1 y at2 iguales -> OK
+                                        // Doy por asumido que escalares agrupa tmb char, string y bool
+                                        if(!((at1.type == Symbol.Types.INT || at1.type == Symbol.Types.CHAR ||
+                                        at1.type == Symbol.Types.BOOL) && at1.type == at2.type)){
+                                                ErrorSemantico.deteccion("2.Asignacion con tipos distintos: " + at1.type + ":= " + at2.type);
+                                        }
                                 }
                         }
-
                 }
                 catch (SymbolNotFoundException e){
                         ErrorSemantico.deteccion(e, ("at1.name: " + at1.name + ", at2.name: " + at2.name));
