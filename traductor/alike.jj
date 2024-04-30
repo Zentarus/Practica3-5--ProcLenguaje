@@ -8,7 +8,7 @@
 options {
 	IGNORE_CASE = true;
 	COMMON_TOKEN_ACTION = false;
-	DEBUG_PARSER = true;
+	DEBUG_PARSER = false;
 }
 
 // -----------------------------------------------------------------------------
@@ -1027,16 +1027,114 @@ void expresion_simple(Attributes at) :
 		}
 	}
 	( ( <tSUM> {operador = 0;} | <tRES> {operador = 1;} ) termino(at2) {
-		if (at1.type != Symbol.Types.INT) {
-			// error: El primer termino no es un entero
-			ErrorSemantico.deteccion("El primer termino no es un entero");
-			System.err.println(at1.type);
-			System.err.println(at1.name);
-		}
-		if ((at2.type != at1.type) || (at2.type != Symbol.Types.INT)){
-			// error: Los tipos de terminos no coinciden o at2 no es entero
-			ErrorSemantico.deteccion("Terminos no coinciden, segundo temrino no es un entero");
-		}
+
+		if((at1.name != "CONST_INT") && (at2.name != "CONST_INT")){
+				try{
+					Symbol s1 = st.getSymbol(at1.name);
+					Symbol s2 = st.getSymbol(at2.name);
+					if (s2 instanceof SymbolArray){
+						if(((SymbolArray)s2).baseType != Symbol.Types.INT){
+							// error: El primer factor no es un entero
+							ErrorSemantico.deteccion("El segundo termino no es un entero (tipos incompatibles)");
+						}
+						if (s1 instanceof SymbolArray){
+							if(((SymbolArray)s1).baseType != ((SymbolArray)s2).baseType){
+								ErrorSemantico.deteccion("El primer termino y el segundo son de distinto tipo");
+							}
+						}
+						else if (s1 instanceof SymbolFunction){
+							if(((SymbolFunction)s1).returnType != ((SymbolArray)s2).baseType){
+								ErrorSemantico.deteccion("El primer termino y el segundo son de distinto tipo");
+							}
+						}
+					}
+					else if (s2 instanceof SymbolFunction){
+						if(((SymbolFunction)s2).returnType != Symbol.Types.INT){
+							// error: El primer factor no es un entero
+							ErrorSemantico.deteccion("El segundo termino no es un entero (tipos incompatibles)");
+						}
+						if (s1 instanceof SymbolArray){
+							if(((SymbolArray)s1).baseType != ((SymbolFunction)s2).returnType){
+								ErrorSemantico.deteccion("El primer termino y el segundo son de distinto tipo");
+							}
+						}
+						else if (s1 instanceof SymbolFunction){
+							if(((SymbolFunction)s1).returnType != ((SymbolFunction)s2).returnType){
+								ErrorSemantico.deteccion("El primer termino y el segundo son de distinto tipo");
+							}
+						}
+					}
+					else {
+						if(at2.type != Symbol.Types.INT){
+							// error: El primer factor no es un entero
+							ErrorSemantico.deteccion("El segundo termino no es un entero (tipos incompatibles)");
+						}
+						if (s1 instanceof SymbolArray){
+							if(((SymbolArray)s1).baseType != at2.type){
+								ErrorSemantico.deteccion("El primer termino y el segundo son de distinto tipo");
+							}
+						}
+						else if (s1 instanceof SymbolFunction){
+							if(((SymbolFunction)s1).returnType != at2.type){
+								ErrorSemantico.deteccion("El primer termino y el segundo son de distinto tipo");
+							}
+						}
+					}
+				}
+				catch(SymbolNotFoundException e) {
+					ErrorSemantico.deteccion(e, ("at1: " + at1.name + "; at2: " + at2.name));
+				}
+			}
+			else{
+				// Para el caso de tener alguna constante en la operación: 
+				if(at1.name == "CONST_INT" && at2.name != "CONST_INT") {
+					try{
+						Symbol s2 = st.getSymbol(at2.name);
+						if (s2 instanceof SymbolArray){
+							if(((SymbolArray)s2).baseType != at1.type){
+								ErrorSemantico.deteccion("El primer termino y el segundo son de distinto tipo");
+							}
+						}
+						else if (s2 instanceof SymbolFunction){
+							if(((SymbolFunction)s2).returnType != at1.type){
+								ErrorSemantico.deteccion("El primer termino y el segundo son de distinto tipo");
+							}
+						}
+						else if(at2.type != at1.type){
+							// error: El primer factor no es un entero
+							ErrorSemantico.deteccion("El primer termino y el segundo son de distinto tipo");
+						}
+					}
+					catch (SymbolNotFoundException e){
+						ErrorSemantico.deteccion(e, at2.name);
+					}
+				}
+				else if (at1.name != "CONST_INT" && at2.name == "CONST_INT"){
+					try{
+						Symbol s1 = st.getSymbol(at1.name);
+						if (s1 instanceof SymbolArray){
+							if(((SymbolArray)s1).baseType != at2.type){
+								ErrorSemantico.deteccion("El primer termino y el segundo son de distinto tipo");
+							}
+						}
+						else if (s1 instanceof SymbolFunction){
+							if(((SymbolFunction)s1).returnType != at2.type){
+								ErrorSemantico.deteccion("El primer termino y el segundo son de distinto tipo");
+							}
+						}
+						else if(at2.type != at1.type){
+							// error: El primer factor no es un entero
+							ErrorSemantico.deteccion("El primer termino y el segundo son de distinto tipo");
+						}
+					}
+					catch (SymbolNotFoundException e){
+						ErrorSemantico.deteccion(e, at1.name);
+					}
+				}
+				// El caso de que ambas son iguales ya nos indica que los dos son enteros
+			}
+
+		// ------------------------------------ GENERACION DE CODIGO ----------------------------------
 
 		at.code.addBlock(at1.code);
 		at.code.addBlock(at2.code);
@@ -1065,16 +1163,138 @@ factor(at1) {at.name = at1.name; at.type = at1.type; at.code = at1.code; /*at = 
 		operador_multiplicativo(operador) {
 			// Aparece una operación de mul, div o mod, por lo tanto comprobamos
 			// que at1 sea entero.
-			if (at1.type != Symbol.Types.INT) {
-				// error: El primer factor no es un entero
-				ErrorSemantico.deteccion("El primer factor no es un entero");
+			if (at1.name != "CONST_INT"){
+				try{
+					Symbol s = st.getSymbol(at1.name);
+					if (s instanceof SymbolArray){
+						if(((SymbolArray)s).baseType != Symbol.Types.INT){
+							// error: El primer factor no es un entero
+							ErrorSemantico.deteccion("El primer factor no es un entero - Array");
+						}
+					}
+					else if (s instanceof SymbolFunction){
+						if(((SymbolFunction)s).returnType != Symbol.Types.INT){
+							// error: El primer factor no es un entero
+							ErrorSemantico.deteccion("El primer factor no es un entero - Function");
+						}
+					}
+					else {
+						if(at1.type != Symbol.Types.INT){
+							// error: El primer factor no es un entero
+							ErrorSemantico.deteccion("El primer factor no es un entero");
+						}
+					}
+				}
+				catch(SymbolNotFoundException e) {
+					ErrorSemantico.deteccion(e, at1.name);
+				}
 			}
 		}
 	  	factor(at2) {
-			// Comprobamos que at2 es mismo tipo que at1, que deberá ser un entero.
-			if((at2.type != at1.type) || (at2.type != Symbol.Types.INT)) {
-				// error: Los tipos de factores no coinciden o at2 no es entero
-				ErrorSemantico.deteccion("Los tipos de factores no coinciden");
+			if((at1.name != "CONST_INT") && (at2.name != "CONST_INT")){
+				try{
+					Symbol s1 = st.getSymbol(at1.name);
+					Symbol s2 = st.getSymbol(at2.name);
+					if (s2 instanceof SymbolArray){
+						if(((SymbolArray)s2).baseType != Symbol.Types.INT){
+							// error: El primer factor no es un entero
+							ErrorSemantico.deteccion("El segundo factor no es un entero (tipos incompatibles)");
+						}
+						if (s1 instanceof SymbolArray){
+							if(((SymbolArray)s1).baseType != ((SymbolArray)s2).baseType){
+								ErrorSemantico.deteccion("El primer factor y el segundo son de distinto tipo");
+							}
+						}
+						else if (s1 instanceof SymbolFunction){
+							if(((SymbolFunction)s1).returnType != ((SymbolArray)s2).baseType){
+								ErrorSemantico.deteccion("El primer factor y el segundo son de distinto tipo");
+							}
+						}
+					}
+					else if (s2 instanceof SymbolFunction){
+						if(((SymbolFunction)s2).returnType != Symbol.Types.INT){
+							// error: El primer factor no es un entero
+							ErrorSemantico.deteccion("El segundo factor no es un entero (tipos incompatibles)");
+						}
+						if (s1 instanceof SymbolArray){
+							if(((SymbolArray)s1).baseType != ((SymbolFunction)s2).returnType){
+								ErrorSemantico.deteccion("El primer factor y el segundo son de distinto tipo");
+							}
+						}
+						else if (s1 instanceof SymbolFunction){
+							if(((SymbolFunction)s1).returnType != ((SymbolFunction)s2).returnType){
+								ErrorSemantico.deteccion("El primer factor y el segundo son de distinto tipo");
+							}
+						}
+					}
+					else {
+						if(at2.type != Symbol.Types.INT){
+							// error: El primer factor no es un entero
+							ErrorSemantico.deteccion("El segundo factor no es un entero (tipos incompatibles)");
+						}
+						if (s1 instanceof SymbolArray){
+							if(((SymbolArray)s1).baseType != at2.type){
+								ErrorSemantico.deteccion("El primer factor y el segundo son de distinto tipo");
+							}
+						}
+						else if (s1 instanceof SymbolFunction){
+							if(((SymbolFunction)s1).returnType != at2.type){
+								ErrorSemantico.deteccion("El primer factor y el segundo son de distinto tipo");
+							}
+						}
+					}
+				}
+				catch(SymbolNotFoundException e) {
+					ErrorSemantico.deteccion(e, ("at1: " + at1.name + "; at2: " + at2.name));
+				}
+			}
+			else{
+				// Para el caso de tener alguna constante en la operación: 
+				if(at1.name == "CONST_INT" && at2.name != "CONST_INT") {
+					try{
+						Symbol s2 = st.getSymbol(at2.name);
+						if (s2 instanceof SymbolArray){
+							if(((SymbolArray)s2).baseType != at1.type){
+								ErrorSemantico.deteccion("El primer factor y el segundo son de distinto tipo");
+							}
+						}
+						else if (s2 instanceof SymbolFunction){
+							if(((SymbolFunction)s2).returnType != at1.type){
+								ErrorSemantico.deteccion("El primer factor y el segundo son de distinto tipo");
+							}
+						}
+						else if(at2.type != at1.type){
+							// error: El primer factor no es un entero
+							ErrorSemantico.deteccion("El primer factor y el segundo son de distinto tipo");
+						}
+					}
+					catch (SymbolNotFoundException e){
+						ErrorSemantico.deteccion(e, at2.name);
+					}
+				}
+				else if (at1.name != "CONST_INT" && at2.name == "CONST_INT"){
+					try{
+						Symbol s1 = st.getSymbol(at1.name);
+						if (s1 instanceof SymbolArray){
+							if(((SymbolArray)s1).baseType != at2.type){
+								ErrorSemantico.deteccion("El primer factor y el segundo son de distinto tipo");
+							}
+						}
+						else if (s1 instanceof SymbolFunction){
+							if(((SymbolFunction)s1).returnType != at2.type){
+								ErrorSemantico.deteccion("El primer factor y el segundo son de distinto tipo");
+							}
+						}
+						else if(at2.type != at1.type){
+							// error: El primer factor no es un entero
+							ErrorSemantico.deteccion("El primer factor y el segundo son de distinto tipo");
+						}
+					}
+					catch (SymbolNotFoundException e){
+						ErrorSemantico.deteccion(e, at1.name);
+					}
+				}
+				// El caso de que ambas son iguales ya nos indica que los dos son enteros
 			}
 
 			// -------------------------------------------------------------------------
