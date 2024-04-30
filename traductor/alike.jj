@@ -1406,63 +1406,139 @@ void primario(Attributes at) :
 					ErrorSemantico.deteccion("Numero incorrecto de parametros");
 				}
 				else {
-					for (int i = 0; i < ats.size(); i++) {
-						Attributes atP;	// HAY QUE OBTENER SU SIMBOLO PARA COMPROBAR TIPOS SI ES COMPONENTE VECTOR O FUNCIÓN (lo mismo que en termino y factor)
-						Symbol sP; 
-						atP = ats.get(i);
-						sP = ((SymbolProcedure)s).parList.get(i);
+					try {
+						for (int i = 0; i < ats.size(); i++) {
+							Attributes atP;	
+							Symbol sP;
+							atP = ats.get(i);
+							sP = ((SymbolProcedure)s).parList.get(i);
 
-						if(sP instanceof SymbolFunction){
-							if (atP.type != ((SymbolFunction)sP).returnType) {
-								ErrorSemantico.deteccion("Los tipos de los parametros no coinciden: " + atP.type + "|" + ((SymbolFunction)sP).returnType + "- Procedure1");
-								break;
+							// Evitamos llamar a getSymbol si los atributos son constantes escalares
+							if (atP.name != "TRUE" && atP.name != "FALSE" && atP.name != "CONST_INT"  && atP.name != "CONST_CHAR" & atP.name != "CONST_STRING"){
+								Symbol symbol_atP = st.getSymbol(atP.name);
+								if(sP instanceof SymbolFunction){ 
+									if (symbol_atP instanceof SymbolFunction){
+										if (((SymbolFunction)symbol_atP).returnType != ((SymbolFunction)sP).returnType) {
+											ErrorSemantico.deteccion("Los tipos de los parametros no coinciden: " + ((SymbolFunction)symbol_atP).returnType + "|" + ((SymbolFunction)sP).returnType + "- Procedure1.1");
+											break;
+										}
+									}
+									else if (symbol_atP instanceof SymbolArray){
+										if (((SymbolArray)symbol_atP).baseType != ((SymbolFunction)sP).returnType) {
+											ErrorSemantico.deteccion("Los tipos de los parametros no coinciden: " + ((SymbolArray)symbol_atP).baseType + "|" + ((SymbolFunction)sP).returnType + "- Procedure1.2");
+											break;
+										}
+									}
+									else{
+										if (atP.type != ((SymbolFunction)sP).returnType) {
+											ErrorSemantico.deteccion("Los tipos de los parametros no coinciden: " + atP.type + "|" + ((SymbolFunction)sP).returnType + "- Procedure1.3");
+											break;
+										}
+									}
+								}
+								else if(sP instanceof SymbolArray){
+									if (symbol_atP instanceof SymbolFunction){
+										if (((SymbolFunction)symbol_atP).returnType != ((SymbolArray)sP).baseType) {
+											ErrorSemantico.deteccion("Los tipos de los parametros no coinciden: " + ((SymbolFunction)symbol_atP).returnType + "|" + ((SymbolArray)sP).baseType + "- Procedure2.1");
+											break;
+										}
+									}
+									else if (symbol_atP instanceof SymbolArray){
+										if (((SymbolArray)symbol_atP).baseType != ((SymbolArray)sP).baseType) {
+											ErrorSemantico.deteccion("Los tipos de los parametros no coinciden: " + ((SymbolArray)symbol_atP).baseType + "|" + ((SymbolArray)sP).baseType + "- Procedure2.2");
+											break;
+										}
+									}
+									else {
+										if (atP.type != ((SymbolArray)sP).baseType) {
+											ErrorSemantico.deteccion("Los tipos de los parametros no coinciden: " + atP.type + "|" + ((SymbolArray)sP).baseType + "- Procedure2.3");
+											break;
+										}
+									}
+									
+								}
 							}
-						}
-						else if(sP instanceof SymbolArray){
-							if (atP.type != ((SymbolArray)sP).baseType) {
-								ErrorSemantico.deteccion("Los tipos de los parametros no coinciden: " + atP.type + "|" + ((SymbolArray)sP).baseType + "- Procedure2");
-								break;
-							}
-						}
-						else{
-							if (atP.type != sP.type) {
-								ErrorSemantico.deteccion("Los tipos de los parametros no coinciden: " + atP.type + "|" + sP.type + "- Procedure3");
-								break;
+							else{ // Casos en el que los atributos sean valores constantes (TRUE, FALSE, CONST_INT, ...)
+								if (atP.type != sP.type) {
+									ErrorSemantico.deteccion("Los tipos de los parametros no coinciden: " + atP.type + "|" + sP.type + "- Procedure3");
+									break;
+								}
 							}
 						}
 					}
+					catch(SymbolNotFoundException e){
+						ErrorSemantico.deteccion(e, "Atributo atP");
+					}
 				}
 			}
-			else if ((s instanceof SymbolFunction)){
+			else if (s instanceof SymbolFunction){
 				
 				if(ats.size() != ((SymbolFunction)s).parList.size()) {
 					ErrorSemantico.deteccion("Numero incorrecto de parametros");
 				}
 				else {
-					for (int i = 0; i < ats.size(); i++) {
-						Attributes atF; // HAY QUE OBTENER SU SIMBOLO PARA COMPROBAR TIPOS SI ES COMPONENTE VECTOR O FUNCIÓN (lo mismo que en termino y factor)
-						Symbol sF;
-						atF = ats.get(i);
-						sF = ((SymbolFunction)s).parList.get(i);
+					try {
+						for (int i = 0; i < ats.size(); i++) {
+							Attributes atF;	
+							Symbol sF;
+							atF = ats.get(i);
+							sF = ((SymbolFunction)s).parList.get(i);
 
-						if(sF instanceof SymbolFunction){
-							if (atF.type != ((SymbolFunction)sF).returnType) {
-								ErrorSemantico.deteccion("Los tipos de los parametros no coinciden - Function1");
-								break;
+							// Evitamos llamar a getSymbol si los atributos son constantes escalares
+							if (atF.name != "TRUE" && atF.name != "FALSE" && atF.name != "CONST_INT"  && atF.name != "CONST_CHAR" & atF.name != "CONST_STRING"){
+								Symbol symbol_atF = st.getSymbol(atF.name);
+								if(sF instanceof SymbolFunction){ 
+									if (symbol_atF instanceof SymbolFunction){
+										if (((SymbolFunction)symbol_atF).returnType != ((SymbolFunction)sF).returnType) {
+											ErrorSemantico.deteccion("Los tipos de los parametros no coinciden: " + ((SymbolFunction)symbol_atF).returnType + "|" + ((SymbolFunction)sF).returnType + "- Function1.1");
+											break;
+										}
+									}
+									else if (symbol_atF instanceof SymbolArray){
+										if (((SymbolArray)symbol_atF).baseType != ((SymbolFunction)sF).returnType) {
+											ErrorSemantico.deteccion("Los tipos de los parametros no coinciden: " + ((SymbolArray)symbol_atF).baseType + "|" + ((SymbolFunction)sF).returnType + "- Function1.2");
+											break;
+										}
+									}
+									else{
+										if (atF.type != ((SymbolFunction)sF).returnType) {
+											ErrorSemantico.deteccion("Los tipos de los parametros no coinciden: " + atF.type + "|" + ((SymbolFunction)sF).returnType + "- Function1.3");
+											break;
+										}
+									}
+								}
+								else if(sF instanceof SymbolArray){
+									if (symbol_atF instanceof SymbolFunction){
+										if (((SymbolFunction)symbol_atF).returnType != ((SymbolArray)sF).baseType) {
+											ErrorSemantico.deteccion("Los tipos de los parametros no coinciden: " + ((SymbolFunction)symbol_atF).returnType + "|" + ((SymbolArray)sF).baseType + "- Function2.1");
+											break;
+										}
+									}
+									else if (symbol_atF instanceof SymbolArray){
+										if (((SymbolArray)symbol_atF).baseType != ((SymbolArray)sF).baseType) {
+											ErrorSemantico.deteccion("Los tipos de los parametros no coinciden: " + ((SymbolArray)symbol_atF).baseType + "|" + ((SymbolArray)sF).baseType + "- Function2.2");
+											break;
+										}
+									}
+									else {
+										if (atF.type != ((SymbolArray)sF).baseType) {
+											ErrorSemantico.deteccion("Los tipos de los parametros no coinciden: " + atF.type + "|" + ((SymbolArray)sF).baseType + "- Function2.3");
+											break;
+										}
+									}
+									
+								}
+							}
+							else{ // Casos en el que los atributos sean valores constantes (TRUE, FALSE, CONST_INT, ...)
+								if (atF.type != sF.type) {
+									ErrorSemantico.deteccion("Los tipos de los parametros no coinciden: " + atF.type + "|" + sF.type + "- Function3");
+									break;
+								}
 							}
 						}
-						else if(sF instanceof SymbolArray){
-							if (atF.type != ((SymbolArray)sF).baseType) {
-								ErrorSemantico.deteccion("Los tipos de los parametros no coinciden - Function2");
-								break;
-							}
-						}
-						else{
-							if (atF.type != sF.type) {
-								ErrorSemantico.deteccion("Los tipos de los parametros no coinciden - Function3");
-								break;
-							}
-						}
+					}
+					catch(SymbolNotFoundException e){
+						ErrorSemantico.deteccion(e, "Atributo atF");
 					}
 					at.type = ((SymbolFunction)s).returnType;
 				}
