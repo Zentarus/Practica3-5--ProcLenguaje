@@ -230,6 +230,20 @@ Attributes at = new Attributes();
         jj_la1[4] = jj_gen;
         ;
       }
+      label_2:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+        case tPROCEDURE:
+        case tFUNCTION:{
+          ;
+          break;
+          }
+        default:
+          jj_la1[5] = jj_gen;
+          break label_2;
+        }
+        declaracion_proc_func();
+      }
       jj_consume_token(tBEGIN);
       instrucciones_return();
       jj_consume_token(tEND);
@@ -252,8 +266,22 @@ Attributes at = new Attributes();
         break;
         }
       default:
-        jj_la1[5] = jj_gen;
+        jj_la1[6] = jj_gen;
         ;
+      }
+      label_3:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+        case tPROCEDURE:
+        case tFUNCTION:{
+          ;
+          break;
+          }
+        default:
+          jj_la1[7] = jj_gen;
+          break label_3;
+        }
+        declaracion_proc_func();
       }
       jj_consume_token(tBEGIN);
       instrucciones();
@@ -273,7 +301,7 @@ ArrayList<Token> ids = new ArrayList<Token>();
         Token t;
       t = jj_consume_token(tID);
 ids.add(t);
-      label_2:
+      label_4:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
         case tCOMA:{
@@ -281,8 +309,8 @@ ids.add(t);
           break;
           }
         default:
-          jj_la1[6] = jj_gen;
-          break label_2;
+          jj_la1[8] = jj_gen;
+          break label_4;
         }
         jj_consume_token(tCOMA);
         t = jj_consume_token(tID);
@@ -299,7 +327,7 @@ ids.add(t);
     trace_call("declaracion_variables");
     try {
 
-      label_3:
+      label_5:
       while (true) {
         declaracion_var();
         switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -308,8 +336,8 @@ ids.add(t);
           break;
           }
         default:
-          jj_la1[7] = jj_gen;
-          break label_3;
+          jj_la1[9] = jj_gen;
+          break label_5;
         }
       }
     } finally {
@@ -321,7 +349,7 @@ ids.add(t);
     trace_call("declaracion_variables_puntocoma");
     try {
 Attributes at = new Attributes();
-      label_4:
+      label_6:
       while (true) {
         declaracion_var_puntocoma(at);
         switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -330,8 +358,8 @@ Attributes at = new Attributes();
           break;
           }
         default:
-          jj_la1[8] = jj_gen;
-          break label_4;
+          jj_la1[10] = jj_gen;
+          break label_6;
         }
       }
     } finally {
@@ -365,7 +393,7 @@ at.type = Symbol.Types.INT;
         break;
         }
       default:
-        jj_la1[9] = jj_gen;
+        jj_la1[11] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -378,13 +406,42 @@ at.type = Symbol.Types.INT;
     trace_call("rango");
     try {
 Token t1, t2;
+        Boolean res1 = false;
+        Boolean res2 = false;
+      switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+      case tRES:{
+        jj_consume_token(tRES);
+res1 = true;
+        break;
+        }
+      default:
+        jj_la1[12] = jj_gen;
+        ;
+      }
       t1 = jj_consume_token(tCONST_INT);
       jj_consume_token(tDOSPUNTOS);
+      switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+      case tRES:{
+        jj_consume_token(tRES);
+res2 = true;
+        break;
+        }
+      default:
+        jj_la1[13] = jj_gen;
+        ;
+      }
       t2 = jj_consume_token(tCONST_INT);
 Integer inicio,fin;
                 inicio = Integer.valueOf(t1.image);
                 fin = Integer.valueOf(t2.image);
+                if(res1){
+                        inicio = inicio * -1;
+                }
+                if(res2){
+                        fin = fin * -1;
+                }
                 if(inicio > fin) {
+                        //System.out.println(ANSI_YELLOW + inicio + ", " + fin + ANSI_RESET);
                         ErrorSemantico.deteccion("Rango invalido");
                 }
                 else {
@@ -432,7 +489,7 @@ at1.parClass = Symbol.ParameterClass.REF;
         break;
         }
       default:
-        jj_la1[10] = jj_gen;
+        jj_la1[14] = jj_gen;
         ;
       }
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -452,7 +509,7 @@ iterarYanadirEnTablaDeSimbolos(ids,at2);
         break;
         }
       default:
-        jj_la1[11] = jj_gen;
+        jj_la1[15] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -483,7 +540,7 @@ iterarYanadirEnTablaDeSimbolos(ids,at2);
         break;
         }
       default:
-        jj_la1[12] = jj_gen;
+        jj_la1[16] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -501,7 +558,7 @@ Attributes at1 = new Attributes(), at2 = new Attributes();
 for (Symbol s : at1.parList) {
                         at.parList.add(s);
                 }
-      label_5:
+      label_7:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
         case tPUNTOCOMA:{
@@ -509,8 +566,8 @@ for (Symbol s : at1.parList) {
           break;
           }
         default:
-          jj_la1[13] = jj_gen;
-          break label_5;
+          jj_la1[17] = jj_gen;
+          break label_7;
         }
         jj_consume_token(tPUNTOCOMA);
         declaracion_var_puntocoma(at2);
@@ -562,7 +619,7 @@ try {
         break;
         }
       default:
-        jj_la1[14] = jj_gen;
+        jj_la1[18] = jj_gen;
         ;
       }
       jj_consume_token(tIS);
@@ -597,7 +654,7 @@ Symbol s;
         break;
         }
       default:
-        jj_la1[15] = jj_gen;
+        jj_la1[19] = jj_gen;
         ;
       }
       jj_consume_token(tRETURN);
@@ -627,7 +684,8 @@ ArrayList<Token> ids;
       jj_consume_token(tGET);
       jj_consume_token(tPARENTESIS_OPEN);
       ids = lista_ids();
-for(Token t : ids) {
+// NO, es una lista de asignables, o son IDs o son un ID(expresion)
+                for(Token t : ids) {
                         try {
                                 Symbol s = st.getSymbol(t.image);
                                 if (!((s.type == Symbol.Types.CHAR) || (s.type == Symbol.Types.INT))) {
@@ -641,6 +699,35 @@ for(Token t : ids) {
       jj_consume_token(tPARENTESIS_CLOSE);
     } finally {
       trace_return("inst_leer");
+    }
+}
+
+  static final public ArrayList<Token> lista_asignables() throws ParseException {
+    trace_call("lista_asignables");
+    try {
+ArrayList<Token> ids = new ArrayList<Token>();
+        Token t;
+      t = jj_consume_token(tID);
+ids.add(t);
+      label_8:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+        case tCOMA:{
+          ;
+          break;
+          }
+        default:
+          jj_la1[20] = jj_gen;
+          break label_8;
+        }
+        jj_consume_token(tCOMA);
+        t = jj_consume_token(tID);
+ids.add(t);
+      }
+{if ("" != null) return ids;}
+    throw new Error("Missing return statement in function");
+    } finally {
+      trace_return("lista_asignables");
     }
 }
 
@@ -693,7 +780,7 @@ for (Attributes at : ats) {
         break;
         }
       default:
-        jj_la1[16] = jj_gen;
+        jj_la1[21] = jj_gen;
         ;
       }
     } finally {
@@ -774,7 +861,7 @@ Symbol s = null, s2 = null;
         break;
         }
       default:
-        jj_la1[17] = jj_gen;
+        jj_la1[22] = jj_gen;
         ;
       }
     } finally {
@@ -788,34 +875,12 @@ Symbol s = null, s2 = null;
 Attributes at1 = new Attributes(), at2 = new Attributes();
       jj_consume_token(tIF);
       expresion(at1);
-// Puede consultarse también el resultado de una función o la componente de un vector
-                try{
-                        Symbol s = st.getSymbol(at1.name);
-
-                        if(s instanceof SymbolFunction){
-                                if (((SymbolFunction)s).returnType != Symbol.Types.BOOL) {
-                                        System.out.println(ANSI_YELLOW + ((SymbolFunction)s).returnType + ANSI_RESET);
-                                        ErrorSemantico.deteccion("Se esperaba booleano <if> : Function 1.1");
-                                }
-                        }
-                        else if (s instanceof SymbolArray){
-                                if (((SymbolArray)s).baseType != Symbol.Types.BOOL) {
-                                        System.out.println(ANSI_YELLOW + ((SymbolArray)s).baseType + ANSI_RESET);
-                                        ErrorSemantico.deteccion("Se esperaba booleano <if> : Function 1.2");
-                                }
-                        }
-                        else {
-                                if (at1.type != Symbol.Types.BOOL) {
-                                        ErrorSemantico.deteccion("Se esperaba booleano <if> 2");
-                                }
-                        }
-                }
-                catch(SymbolNotFoundException e){
-                        ErrorSemantico.deteccion(e, at1.name);
+if (at1.type != Symbol.Types.BOOL) {
+                        ErrorSemantico.deteccion("Se esperaba booleano <if> 1");
                 }
       jj_consume_token(tTHEN);
       instrucciones_return();
-      label_6:
+      label_9:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
         case tELIF:{
@@ -823,34 +888,14 @@ Attributes at1 = new Attributes(), at2 = new Attributes();
           break;
           }
         default:
-          jj_la1[18] = jj_gen;
-          break label_6;
+          jj_la1[23] = jj_gen;
+          break label_9;
         }
         jj_consume_token(tELIF);
         expresion(at2);
-// Puede consultarse también el resultado de una función o la componente de un vector
-                        try{
-                                Symbol s2 = st.getSymbol(at2.name);
-
-                                if(s2 instanceof SymbolFunction){
-                                        if (((SymbolFunction)s2).returnType != Symbol.Types.BOOL) {
-                                                ErrorSemantico.deteccion("Se esperaba booleano <if> : Function 2.1");
-                                        }
-                                }
-                                else if (s2 instanceof SymbolArray){
-                                        if (((SymbolArray)s2).baseType != Symbol.Types.BOOL) {
-                                                ErrorSemantico.deteccion("Se esperaba booleano <if> : Function 2.2");
-                                        }
-                                }
-                                else {
-                                        if (at2.type != Symbol.Types.BOOL) {
-                                                ErrorSemantico.deteccion("Se esperaba booleano <if> 3");
-                                        }
-                                }
-                        }
-                        catch(SymbolNotFoundException e){
-                                ErrorSemantico.deteccion(e, at2.name);
-                        }
+if (at2.type != Symbol.Types.BOOL) {
+                        ErrorSemantico.deteccion("Se esperaba booleano <if> 2");
+                }
         jj_consume_token(tTHEN);
         instrucciones_return();
       }
@@ -861,7 +906,7 @@ Attributes at1 = new Attributes(), at2 = new Attributes();
         break;
         }
       default:
-        jj_la1[19] = jj_gen;
+        jj_la1[24] = jj_gen;
         ;
       }
       jj_consume_token(tEND);
@@ -874,9 +919,12 @@ Attributes at1 = new Attributes(), at2 = new Attributes();
   static final public void inst_while() throws ParseException {
     trace_call("inst_while");
     try {
-Attributes at = new Attributes();
+Attributes at1 = new Attributes();
       jj_consume_token(tWHILE);
-      expresion(at);
+      expresion(at1);
+if (at1.type != Symbol.Types.BOOL) {
+                        ErrorSemantico.deteccion("Se esperaba booleano <while>");
+                }
       jj_consume_token(tLOOP);
       instrucciones_return();
       jj_consume_token(tEND);
@@ -964,7 +1012,7 @@ Attributes at = new Attributes();
         break;
         }
       default:
-        jj_la1[20] = jj_gen;
+        jj_la1[25] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1022,7 +1070,7 @@ Attributes at = new Attributes();
         break;
         }
       default:
-        jj_la1[21] = jj_gen;
+        jj_la1[26] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1035,7 +1083,7 @@ Attributes at = new Attributes();
     trace_call("instrucciones");
     try {
 
-      label_7:
+      label_10:
       while (true) {
         instruccion();
         jj_consume_token(tPUNTOCOMA);
@@ -1063,8 +1111,8 @@ Attributes at = new Attributes();
           break;
           }
         default:
-          jj_la1[22] = jj_gen;
-          break label_7;
+          jj_la1[27] = jj_gen;
+          break label_10;
         }
       }
     } finally {
@@ -1076,7 +1124,7 @@ Attributes at = new Attributes();
     trace_call("instrucciones_return");
     try {
 
-      label_8:
+      label_11:
       while (true) {
         instruccion_return();
         jj_consume_token(tPUNTOCOMA);
@@ -1105,8 +1153,8 @@ Attributes at = new Attributes();
           break;
           }
         default:
-          jj_la1[23] = jj_gen;
-          break label_8;
+          jj_la1[28] = jj_gen;
+          break label_11;
         }
       }
     } finally {
@@ -1121,12 +1169,13 @@ Attributes at1 = new Attributes(), at2 = new Attributes();
         Integer operador = -1;
       relacion(at1);
 at.type = at1.type;
+                //System.out.println(ANSI_YELLOW + at.type + ANSI_RESET);
                 at.isVecComp = at1.isVecComp;
                 at.name = at1.name;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case tAND:
       case tOR:{
-        label_9:
+        label_12:
         while (true) {
           switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
           case tAND:{
@@ -1140,12 +1189,14 @@ operador = 1;
             break;
             }
           default:
-            jj_la1[24] = jj_gen;
+            jj_la1[29] = jj_gen;
             jj_consume_token(-1);
             throw new ParseException();
           }
           relacion(at2);
-if (!((at1.type == at2.type) && (at1.type == Symbol.Types.BOOL))) {
+//System.out.println(ANSI_YELLOW + at1.type + ", " + at2.type + ANSI_RESET);
+                if (!((at1.type == at2.type) && (at1.type == Symbol.Types.BOOL))) {
+                        System.out.println(ANSI_YELLOW + "at1.type: " + at1.type + ", at2.type: " + at2.type + ANSI_RESET);
                         at.type = Symbol.Types.UNDEFINED;
                         ErrorSemantico.deteccion("Se esperaban booleanos");
                 }
@@ -1169,14 +1220,14 @@ if (!((at1.type == at2.type) && (at1.type == Symbol.Types.BOOL))) {
             break;
             }
           default:
-            jj_la1[25] = jj_gen;
-            break label_9;
+            jj_la1[30] = jj_gen;
+            break label_12;
           }
         }
         break;
         }
       default:
-        jj_la1[26] = jj_gen;
+        jj_la1[31] = jj_gen;
         ;
       }
     } finally {
@@ -1190,7 +1241,7 @@ if (!((at1.type == at2.type) && (at1.type == Symbol.Types.BOOL))) {
 Attributes at1 = new Attributes(), at2 = new Attributes();
       expresion(at1);
 ats.add(at1); /*System.out.println(ANSI_YELLOW + at1.name + ", " + at1.type + ANSI_RESET);*/
-      label_10:
+      label_13:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
         case tCOMA:{
@@ -1198,8 +1249,8 @@ ats.add(at1); /*System.out.println(ANSI_YELLOW + at1.name + ", " + at1.type + AN
           break;
           }
         default:
-          jj_la1[27] = jj_gen;
-          break label_10;
+          jj_la1[32] = jj_gen;
+          break label_13;
         }
         jj_consume_token(tCOMA);
         expresion(at2);
@@ -1219,13 +1270,31 @@ ats.add(at2);
 Attributes at1 = new Attributes(), at2 = new Attributes();
         ArrayList<Integer> operador = new ArrayList<Integer>();
       expresion_simple(at1);
-at.name = at1.name;
-                at.type = at1.type;
+if (at1.name != "TRUE" && at1.name != "FALSE" && at1.name != "CONST_INT"  && at1.name != "CONST_CHAR" && at1.name != "CONST_STRING"){
+                        try{
+                                Symbol s = st.getSymbol(at1.name);
+
+                                if(s instanceof SymbolFunction){
+                                        at.type = ((SymbolFunction)s).returnType;
+                                }
+                                else if (s instanceof SymbolArray){
+                                        at.type = ((SymbolArray)s).baseType;
+                                }
+                                else {
+                                        at.type = at1.type;
+                                }
+                        }
+                        catch(SymbolNotFoundException e){
+                                ErrorSemantico.deteccion(e, at1.name);
+                        }
+                }
+                else {
+                        at.type = at1.type;
+                }
+                at.name = at1.name;
                 at.isConst = at1.isConst;
                 at.isVar = at1.isVar;
                 at.isVecComp = at1.isVecComp;
-                //at.parClass = at1.parClass;
-                //at.parList = at1.parList;
 
                 // ----------------------------------------------------
 
@@ -1239,16 +1308,194 @@ at.name = at1.name;
       case tDIF:{
         operador_relacional(operador);
         expresion_simple(at2);
-if (at1.type == at2.type) {
-                        at.type = Symbol.Types.BOOL;
+if ((at1.name != "TRUE" && at1.name != "FALSE" && at1.name != "CONST_INT"  && at1.name != "CONST_CHAR" && at1.name != "CONST_STRING") &&
+                   (at2.name != "TRUE" && at2.name != "FALSE" && at2.name != "CONST_INT"  && at2.name != "CONST_CHAR" && at2.name != "CONST_STRING")) {
+                        try{
+                                Symbol s = st.getSymbol(at1.name);
+                                Symbol s2 = st.getSymbol(at2.name);
+                                if(s instanceof SymbolFunction){
+                                        if(s2 instanceof SymbolFunction){
+                                                if(((SymbolFunction)s).returnType == ((SymbolFunction)s2).returnType){
+                                                        at.type = Symbol.Types.BOOL;
+                                                }
+                                                else {
+                                                        at.type = Symbol.Types.UNDEFINED;
+                                                        ErrorSemantico.deteccion("Tipos incompatibles ...");
+                                                }
+                                        }
+                                        else if (s2 instanceof SymbolArray){
+                                                if(((SymbolFunction)s).returnType == ((SymbolArray)s2).baseType){
+                                                        at.type = Symbol.Types.BOOL;
+                                                }
+                                                else {
+                                                        at.type = Symbol.Types.UNDEFINED;
+                                                        ErrorSemantico.deteccion("Tipos incompatibles ...");
+                                                }
+                                        }
+                                        else{
+                                                if(((SymbolFunction)s).returnType == at2.type){
+                                                        at.type = Symbol.Types.BOOL;
+                                                }
+                                                else {
+                                                        at.type = Symbol.Types.UNDEFINED;
+                                                        ErrorSemantico.deteccion("Tipos incompatibles ...");
+                                                }
+                                        }
+                                }
+                                else if (s instanceof SymbolArray){
+                                        if(s2 instanceof SymbolFunction){
+                                                if(((SymbolArray)s).baseType == ((SymbolFunction)s2).returnType){
+                                                        at.type = Symbol.Types.BOOL;
+                                                }
+                                                else {
+                                                        at.type = Symbol.Types.UNDEFINED;
+                                                        ErrorSemantico.deteccion("Tipos incompatibles ...");
+                                                }
+                                        }
+                                        else if (s2 instanceof SymbolArray){
+                                                if(((SymbolArray)s).baseType == ((SymbolArray)s2).baseType){
+                                                        at.type = Symbol.Types.BOOL;
+                                                }
+                                                else {
+                                                        at.type = Symbol.Types.UNDEFINED;
+                                                        ErrorSemantico.deteccion("Tipos incompatibles ...");
+                                                }
+                                        }
+                                        else{
+                                                if(((SymbolArray)s).baseType == at2.type){
+                                                        at.type = Symbol.Types.BOOL;
+                                                }
+                                                else {
+                                                        at.type = Symbol.Types.UNDEFINED;
+                                                        ErrorSemantico.deteccion("Tipos incompatibles ...");
+                                                }
+                                        }
+                                }
+                                else {
+                                        if(s2 instanceof SymbolFunction){
+                                                if(at1.type == ((SymbolFunction)s2).returnType){
+                                                        at.type = Symbol.Types.BOOL;
+                                                }
+                                                else {
+                                                        at.type = Symbol.Types.UNDEFINED;
+                                                        ErrorSemantico.deteccion("Tipos incompatibles ...");
+                                                }
+                                        }
+                                        else if (s2 instanceof SymbolArray){
+                                                if(at1.type == ((SymbolArray)s2).baseType){
+                                                        at.type = Symbol.Types.BOOL;
+                                                }
+                                                else {
+                                                        at.type = Symbol.Types.UNDEFINED;
+                                                        ErrorSemantico.deteccion("Tipos incompatibles ...");
+                                                }
+                                        }
+                                        else{
+                                                if(at1.type == at2.type){
+                                                        at.type = Symbol.Types.BOOL;
+                                                }
+                                                else {
+                                                        at.type = Symbol.Types.UNDEFINED;
+                                                        ErrorSemantico.deteccion("Tipos incompatibles ...");
+                                                }
+                                        }
+                                }
+                        }
+                        catch(SymbolNotFoundException e){
+                                ErrorSemantico.deteccion(e, at1.name);
+                        }
                 }
-                else {
-                        at.type = Symbol.Types.UNDEFINED;
-                        ErrorSemantico.deteccion("Tipos incompatibles ...");
+                else if ((at1.name == "TRUE" || at1.name == "FALSE" || at1.name == "CONST_INT"  || at1.name == "CONST_CHAR" || at1.name == "CONST_STRING") &&
+                                (at2.name != "TRUE" && at2.name != "FALSE" && at2.name != "CONST_INT"  && at2.name != "CONST_CHAR" && at2.name != "CONST_STRING")){
+                        try{
+                                Symbol s2 = st.getSymbol(at2.name);
+
+                                if (s2 instanceof SymbolFunction){
+                                        if(at1.type == ((SymbolFunction)s2).returnType){
+                                                at.type = Symbol.Types.BOOL;
+                                        }
+                                        else {
+                                                at.type = Symbol.Types.UNDEFINED;
+                                                ErrorSemantico.deteccion("Tipos incompatibles ...");
+                                        }
+                                }
+                                else if (s2 instanceof SymbolArray){
+                                        if(at1.type == ((SymbolArray)s2).baseType){
+                                                at.type = Symbol.Types.BOOL;
+                                        }
+                                        else {
+                                                at.type = Symbol.Types.UNDEFINED;
+                                                ErrorSemantico.deteccion("Tipos incompatibles ...");
+                                        }
+                                }
+                                else{
+                                        if(at1.type == at2.type){
+                                                at.type = Symbol.Types.BOOL;
+                                        }
+                                        else {
+                                                at.type = Symbol.Types.UNDEFINED;
+                                                ErrorSemantico.deteccion("Tipos incompatibles ...");
+                                        }
+                                }
+                        }
+                        catch(SymbolNotFoundException e){
+                                ErrorSemantico.deteccion(e, at2.name);
+                        }
+                }
+                else if ((at1.name != "TRUE" && at1.name != "FALSE" && at1.name != "CONST_INT"  && at1.name != "CONST_CHAR" && at1.name != "CONST_STRING") &&
+                                (!(at2.name != "TRUE" && at2.name != "FALSE" && at2.name != "CONST_INT"  && at2.name != "CONST_CHAR" && at2.name != "CONST_STRING"))){
+                                        try{
+                                                Symbol s = st.getSymbol(at1.name);
+
+                                                if (s instanceof SymbolFunction){
+                                                        if(at2.type == ((SymbolFunction)s).returnType){
+                                                                at.type = Symbol.Types.BOOL;
+                                                        }
+                                                        else {
+                                                                at.type = Symbol.Types.UNDEFINED;
+                                                                ErrorSemantico.deteccion("Tipos incompatibles ...");
+                                                        }
+                                                }
+                                                else if (s instanceof SymbolArray){
+                                                        if(at2.type == ((SymbolArray)s).baseType){
+                                                                at.type = Symbol.Types.BOOL;
+                                                        }
+                                                        else {
+                                                                at.type = Symbol.Types.UNDEFINED;
+                                                                ErrorSemantico.deteccion("Tipos incompatibles ...");
+                                                        }
+                                                }
+                                                else{
+                                                        if(at1.type == at2.type){
+                                                                at.type = Symbol.Types.BOOL;
+                                                        }
+                                                        else {
+                                                                at.type = Symbol.Types.UNDEFINED;
+                                                                ErrorSemantico.deteccion("Tipos incompatibles ...");
+                                                        }
+                                                }
+                                        }
+                                        catch(SymbolNotFoundException e){
+                                                ErrorSemantico.deteccion(e, at1.name);
+                                        }
+
+                }
+
+                else{
+                        if(at1.type == at2.type){
+                                at.type = Symbol.Types.BOOL;
+                        }
+                        else {
+                                at.type = Symbol.Types.UNDEFINED;
+                                ErrorSemantico.deteccion("Tipos incompatibles ...");
+                        }
                 }
                 at.isVar = false;
                 at.isVecComp = false;
                 at.isConst = true;
+                //System.out.println(ANSI_YELLOW + at.type + ANSI_RESET);
+
+                // ---------------------------------------------------------------
 
                 at.code.addBlock(at1.code);
                 at.code.addBlock(at2.code);
@@ -1275,7 +1522,7 @@ if (at1.type == at2.type) {
         break;
         }
       default:
-        jj_la1[28] = jj_gen;
+        jj_la1[33] = jj_gen;
         ;
       }
     } finally {
@@ -1319,7 +1566,7 @@ operador.add(5);
         break;
         }
       default:
-        jj_la1[29] = jj_gen;
+        jj_la1[34] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1355,14 +1602,14 @@ operador2 = 1;
           break;
           }
         default:
-          jj_la1[30] = jj_gen;
+          jj_la1[35] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
         break;
         }
       default:
-        jj_la1[31] = jj_gen;
+        jj_la1[36] = jj_gen;
         ;
       }
       termino(at1);
@@ -1381,7 +1628,7 @@ at.name = at1.name;
                         default: // Es un simbolo '+' o no se ha especificado un simbolo delante.
                                 break;
                 }
-      label_11:
+      label_14:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
         case tSUM:
@@ -1390,8 +1637,8 @@ at.name = at1.name;
           break;
           }
         default:
-          jj_la1[32] = jj_gen;
-          break label_11;
+          jj_la1[37] = jj_gen;
+          break label_14;
         }
         switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
         case tSUM:{
@@ -1405,7 +1652,7 @@ operador = 1;
           break;
           }
         default:
-          jj_la1[33] = jj_gen;
+          jj_la1[38] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -1417,7 +1664,7 @@ if((at1.name != "CONST_INT") && (at2.name != "CONST_INT")){
                                         if (s2 instanceof SymbolArray){
                                                 if(((SymbolArray)s2).baseType != Symbol.Types.INT){
                                                         // error: El primer factor no es un entero
-                                                        System.out.println(ANSI_YELLOW + ((SymbolArray)s2).baseType + ANSI_RESET);
+                                                        //System.out.println(ANSI_YELLOW + ((SymbolArray)s2).baseType + ANSI_RESET);
                                                         ErrorSemantico.deteccion("El segundo termino no es un entero (tipos incompatibles - 1)");
                                                 }
                                                 if (s1 instanceof SymbolArray){
@@ -1543,7 +1790,7 @@ Attributes at1 = new Attributes(), at2 = new Attributes();
         ArrayList<Integer> operador = new ArrayList<Integer>();
       factor(at1);
 at.name = at1.name; at.type = at1.type; at.code = at1.code; /*at = at1;*/
-      label_12:
+      label_15:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
         case tMUL:
@@ -1553,8 +1800,8 @@ at.name = at1.name; at.type = at1.type; at.code = at1.code; /*at = at1;*/
           break;
           }
         default:
-          jj_la1[34] = jj_gen;
-          break label_12;
+          jj_la1[39] = jj_gen;
+          break label_15;
         }
         operador_multiplicativo(operador);
 // Aparece una operación de mul, div o mod, por lo tanto comprobamos
@@ -1735,7 +1982,7 @@ operador.add(2);
         break;
         }
       default:
-        jj_la1[35] = jj_gen;
+        jj_la1[40] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1775,7 +2022,7 @@ operador.add(2);
         break;
         }
       default:
-        jj_la1[36] = jj_gen;
+        jj_la1[41] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1823,7 +2070,7 @@ if (at.type != Symbol.Types.CHAR) {
         break;
         }
       default:
-        jj_la1[37] = jj_gen;
+        jj_la1[42] = jj_gen;
         if (jj_2_1(2)) {
           t = jj_consume_token(tID);
           jj_consume_token(tPARENTESIS_OPEN);
@@ -1854,8 +2101,8 @@ if (at.type != Symbol.Types.CHAR) {
                         else if ((s instanceof SymbolProcedure)){
 
                                 if(ats.size() != ((SymbolProcedure)s).parList.size()) {
-                                        System.out.println(ANSI_YELLOW + ats.size() + ANSI_RESET);
-                                        System.out.println(ANSI_YELLOW + ((SymbolProcedure)s).parList.size() + ANSI_RESET);
+                                        //System.out.println(ANSI_YELLOW + ats.size() + ANSI_RESET);
+                                        //System.out.println(ANSI_YELLOW + ((SymbolProcedure)s).parList.size() + ANSI_RESET);
                                         ErrorSemantico.deteccion("Numero incorrecto de parametros -");
                                 }
                                 else {
@@ -1867,7 +2114,7 @@ if (at.type != Symbol.Types.CHAR) {
                                                         sP = ((SymbolProcedure)s).parList.get(i);
 
                                                         // Evitamos llamar a getSymbol si los atributos son constantes escalares
-                                                        if (atP.name != "TRUE" && atP.name != "FALSE" && atP.name != "CONST_INT"  && atP.name != "CONST_CHAR" & atP.name != "CONST_STRING"){
+                                                        if (atP.name != "TRUE" && atP.name != "FALSE" && atP.name != "CONST_INT"  && atP.name != "CONST_CHAR" && atP.name != "CONST_STRING"){
                                                                 Symbol symbol_atP = st.getSymbol(atP.name);
                                                                 if(sP instanceof SymbolFunction){
                                                                         if (symbol_atP instanceof SymbolFunction){
@@ -1938,7 +2185,7 @@ if (at.type != Symbol.Types.CHAR) {
                                                         sF = ((SymbolFunction)s).parList.get(i);
 
                                                         // Evitamos llamar a getSymbol si los atributos son constantes escalares
-                                                        if (atF.name != "TRUE" && atF.name != "FALSE" && atF.name != "CONST_INT"  && atF.name != "CONST_CHAR" & atF.name != "CONST_STRING"){
+                                                        if (atF.name != "TRUE" && atF.name != "FALSE" && atF.name != "CONST_INT"  && atF.name != "CONST_CHAR" && atF.name != "CONST_STRING"){
                                                                 Symbol symbol_atF = st.getSymbol(atF.name);
                                                                 if(sF instanceof SymbolFunction){
                                                                         if (symbol_atF instanceof SymbolFunction){
@@ -2067,7 +2314,7 @@ at.name = "FALSE";
             break;
             }
           default:
-            jj_la1[38] = jj_gen;
+            jj_la1[43] = jj_gen;
             jj_consume_token(-1);
             throw new ParseException();
           }
@@ -2105,7 +2352,7 @@ at.name = "FALSE";
   static private Token jj_scanpos, jj_lastpos;
   static private int jj_la;
   static private int jj_gen;
-  static final private int[] jj_la1 = new int[39];
+  static final private int[] jj_la1 = new int[44];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static private int[] jj_la1_2;
@@ -2115,13 +2362,13 @@ at.name = "FALSE";
 	   jj_la1_init_2();
 	}
 	private static void jj_la1_init_0() {
-	   jj_la1_0 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1e00,0x0,0x9e00,0x9e00,0x0,0x0,0x0,0x0,0x80000,0x0,0x0,0x80374000,0x80374000,0x80374000,0x80374000,0x0,0x0,0x0,0x0,0xfc00000,0xfc00000,0x300000,0x300000,0x300000,0x300000,0x70000000,0x70000000,0x80070000,0x0,0x70000,};
+	   jj_la1_0 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1e00,0x200000,0x200000,0x0,0x9e00,0x9e00,0x0,0x0,0x0,0x0,0x0,0x80000,0x0,0x0,0x80374000,0x80374000,0x80374000,0x80374000,0x0,0x0,0x0,0x0,0xfc00000,0xfc00000,0x300000,0x300000,0x300000,0x300000,0x70000000,0x70000000,0x80070000,0x0,0x70000,};
 	}
 	private static void jj_la1_init_1() {
-	   jj_la1_1 = new int[] {0x0,0xc00,0xc00,0xc00,0x0,0x0,0x2000000,0x0,0x0,0x0,0x2000,0x0,0x0,0x10000000,0x80000000,0x80000000,0x80000000,0x0,0x8,0x10,0x80fe0344,0x80fc0344,0x80fc0344,0x80fe0344,0x3,0x3,0x3,0x2000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x80c00300,0x80c00000,0x300,};
+	   jj_la1_1 = new int[] {0x0,0xc00,0xc00,0xc00,0x0,0xc00,0x0,0xc00,0x2000000,0x0,0x0,0x0,0x0,0x0,0x2000,0x0,0x0,0x10000000,0x80000000,0x80000000,0x2000000,0x80000000,0x0,0x8,0x10,0x80fe0344,0x80fc0344,0x80fc0344,0x80fe0344,0x3,0x3,0x3,0x2000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x80c00300,0x80c00000,0x300,};
 	}
 	private static void jj_la1_init_2() {
-	   jj_la1_2 = new int[] {0x2,0x0,0x0,0x0,0x2,0x2,0x0,0x2,0x2,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x2,0x2,0x2,0x2,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x2,0x0,0x2,};
+	   jj_la1_2 = new int[] {0x2,0x0,0x0,0x0,0x2,0x0,0x2,0x0,0x0,0x2,0x2,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x2,0x2,0x2,0x2,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x2,0x0,0x2,};
 	}
   static final private JJCalls[] jj_2_rtns = new JJCalls[1];
   static private boolean jj_rescan = false;
@@ -2148,7 +2395,7 @@ at.name = "FALSE";
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 39; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 44; i++) jj_la1[i] = -1;
 	 for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -2163,7 +2410,7 @@ at.name = "FALSE";
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 39; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 44; i++) jj_la1[i] = -1;
 	 for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -2181,7 +2428,7 @@ at.name = "FALSE";
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 39; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 44; i++) jj_la1[i] = -1;
 	 for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -2200,7 +2447,7 @@ at.name = "FALSE";
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 39; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 44; i++) jj_la1[i] = -1;
 	 for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -2217,7 +2464,7 @@ at.name = "FALSE";
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 39; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 44; i++) jj_la1[i] = -1;
 	 for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -2227,7 +2474,7 @@ at.name = "FALSE";
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 39; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 44; i++) jj_la1[i] = -1;
 	 for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -2365,7 +2612,7 @@ at.name = "FALSE";
 	   la1tokens[jj_kind] = true;
 	   jj_kind = -1;
 	 }
-	 for (int i = 0; i < 39; i++) {
+	 for (int i = 0; i < 44; i++) {
 	   if (jj_la1[i] == jj_gen) {
 		 for (int j = 0; j < 32; j++) {
 		   if ((jj_la1_0[i] & (1<<j)) != 0) {
