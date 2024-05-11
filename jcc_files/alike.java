@@ -10,6 +10,10 @@ import lib.errores.ErrorSemantico;
 import lib.tools.codeGeneration.CodeBlock;
 import lib.tools.codeGeneration.PCodeInstruction.OpCode;
 import lib.tools.codeGeneration.CGUtils;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 //...
 
@@ -18,7 +22,7 @@ public class alike implements alikeConstants {
 
     // Para los mensajes de depuración:
     public static final String ANSI_RESET = "\u001b[0m";
-        // Para los mensajes de depuración:
+        public static final String ANSI_RED = "\u001b[31m";
     public static final String ANSI_YELLOW = "\u001b[33m";
 
         static SymbolTable st;
@@ -35,6 +39,11 @@ public class alike implements alikeConstants {
 
                 //st.insertReservedWords(palsRes);
         }
+
+        public static String obtenerNombreArchivo(String ruta) {
+        File archivo = new File(ruta);
+        return archivo.getName();
+    }
 
         private static void iterarYanadirEnTablaDeSimbolos(ArrayList<Token> ids, Attributes at){
                 Symbol s = null;
@@ -66,9 +75,22 @@ public class alike implements alikeConstants {
                 }
         }
 
+        public static void escribirEnNuevoArchivo(String nomFich, String msg) throws IOException {
+        String nomFichPCODE = obtenerNombreArchivoPCode(nomFich);
+        File nuevoArchivo = new File(nomFichPCODE);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(nuevoArchivo))) {
+            writer.write(msg);
+        }
+    }
+
+    public static String obtenerNombreArchivoPCode(String nomFich) {
+        return nomFich.replaceAll("\\.\\w+$", ".pcode");
+    }
+
    public static void main(String[] args) {
            alike parser = null;
            Attributes at = new Attributes();
+           String nombreFichero = obtenerNombreArchivo(args[0]);
 
                 st = new SymbolTable();
         initSymbolTable();
@@ -83,9 +105,17 @@ public class alike implements alikeConstants {
                    //Programa es el símbolo inicial de la gramática
                    parser.Programa(at);
 
-                   //System.out.println(at.code.toString()); //IMPRIME EL CÓDIGO GENERADO
-                   // hacer print de at.code
-                   System.out.println("***** An\u00e1lisis terminado con \u00e9xito *****");
+                   if(ErrorSemantico.ERR_SEMANTICO){
+                                System.out.println(ANSI_RED + "***** Analisis terminado sin exito, errores semanticos *****" + ANSI_RESET);
+                   }
+                   else{
+                                System.out.println("***** Compilacion finalizada. Se ha generado el fichero <nombreFichero>.pcode *****");
+                                try {
+                                        escribirEnNuevoArchivo(nombreFichero, at.code.toString());
+                                } catch (IOException e) {
+                                        System.out.println("Error al escribir en el archivo: " + e.getMessage());
+                                }
+                        }
            }
            catch (java.io.FileNotFoundException e) {
                    System.err.println ("Fichero " + args[0] + " no encontrado.");
@@ -97,7 +127,6 @@ public class alike implements alikeConstants {
            catch (ParseException e) {
                         System.err.println("Parse_exception: " + e.getMessage());
            }
-           //...
    }
 
 //------------ Símbolo inicial de la gramática. Para análisis léxico no hace falta más

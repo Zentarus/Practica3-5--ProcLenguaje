@@ -9,6 +9,10 @@ import lib.errores.ErrorSemantico;
 import lib.tools.codeGeneration.CodeBlock;
 import lib.tools.codeGeneration.PCodeInstruction.OpCode;
 import lib.tools.codeGeneration.CGUtils;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 /** Token Manager. */
 @SuppressWarnings ("unused")
