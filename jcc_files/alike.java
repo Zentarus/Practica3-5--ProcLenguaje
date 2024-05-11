@@ -1195,6 +1195,7 @@ operador = 1;
           }
           relacion(at2);
 //System.out.println(ANSI_YELLOW + at1.type + ", " + at2.type + ANSI_RESET);
+
                 if (!((at1.type == at2.type) && (at1.type == Symbol.Types.BOOL))) {
                         System.out.println(ANSI_YELLOW + "at1.type: " + at1.type + ", at2.type: " + at2.type + ANSI_RESET);
                         at.type = Symbol.Types.UNDEFINED;
