@@ -167,6 +167,9 @@ Symbol s;
                 catch (AlreadyDefinedSymbolException e) {
                         ErrorSemantico.deteccion(e, t.image);
                 }
+                // ------------------------------------------------
+                String etiqINI_PROGRAM = CGUtils.newLabel();
+                at.code.addInst(OpCode.ENP, etiqINI_PROGRAM);
     jj_consume_token(tIS);
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case tID:{
@@ -2131,6 +2134,9 @@ if (at.type != Symbol.Types.CHAR) {
                 catch (SymbolNotFoundException e) {
                         ErrorSemantico.deteccion(e, t.image);
                 }
+                // -----------------------------------------
+                at.code.addInst(OpCode.SRF, (st.level - s.nivel)); // Falta otro parametro que es el nivel que tiene la variable en el bloque de activación correspondiente ¿De donde lo saco?
+                at.code.addInst(OpCode.DRF);
           break;
           }
         case tCONST_INT:{
@@ -2150,9 +2156,7 @@ at.name = "CONST_CHAR";
                 at.type = Symbol.Types.CHAR;
                 at.isConst = true;
                 // -------------------------------
-                System.out.println(ANSI_YELLOW + t2.image + ANSI_RESET);
                 at.code.addInst(OpCode.STC, ((int)(t2.image).charAt(1)) );
-                System.out.println(ANSI_YELLOW + "ascii: " + ((int)(t2.image).charAt(1)) + ANSI_RESET);
           break;
           }
         case tCONST_STRING:{

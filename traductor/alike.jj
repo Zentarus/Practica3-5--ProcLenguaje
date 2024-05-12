@@ -305,7 +305,11 @@ void Programa(Attributes at) :
 		catch (AlreadyDefinedSymbolException e) {
 			ErrorSemantico.deteccion(e, t.image);
 		}
+		// ------------------------------------------------
+		String etiqINI_PROGRAM = CGUtils.newLabel();
+		at.code.addInst(OpCode.ENP, etiqINI_PROGRAM);
 	}
+	
 	<tIS>
 	( declaracion_variables() )?
 	( declaracion_procs_funcs(at) )?
@@ -1427,7 +1431,8 @@ void termino(Attributes at) :
 
 }
 {
-factor(at1) {at.name = at1.name; at.type = at1.type; at.code = at1.code; /*at = at1;*/} ( 
+factor(at1) {at.name = at1.name; at.type = at1.type; at.code = at1.code; /*at = at1;*/} 
+	( 
 		operador_multiplicativo(operador) {
 			// Aparece una operación de mul, div o mod, por lo tanto comprobamos
 			// que at1 sea entero.
@@ -1835,6 +1840,9 @@ void primario(Attributes at) :
 		catch (SymbolNotFoundException e) {
 			ErrorSemantico.deteccion(e, t.image);
 		}
+		// -----------------------------------------
+		at.code.addInst(OpCode.SRF, (st.level - s.nivel)); // Falta otro parametro que es el nivel que tiene la variable en el bloque de activación correspondiente ¿De donde lo saco?
+		at.code.addInst(OpCode.DRF);
 	}
 |	t1 = <tCONST_INT> {
 		at.name = "CONST_INT";
