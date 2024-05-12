@@ -1895,6 +1895,7 @@ operador.add(2);
 }
 
   static final public void primario(Attributes at) throws ParseException {Token t; // revisar
+        Token t1,t2,t3;
         ArrayList<Attributes> ats = new ArrayList<Attributes>();
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case tPARENTESIS_OPEN:{
@@ -2133,28 +2134,37 @@ if (at.type != Symbol.Types.CHAR) {
           break;
           }
         case tCONST_INT:{
-          jj_consume_token(tCONST_INT);
+          t1 = jj_consume_token(tCONST_INT);
 at.name = "CONST_INT";
                 at.isVar = false;
                 at.type = Symbol.Types.INT;
                 at.isConst = true;
+                // -------------------------------
+                at.code.addInst(OpCode.STC, Integer.valueOf(t1.image));
           break;
           }
         case tCONST_CHAR:{
-          jj_consume_token(tCONST_CHAR);
+          t2 = jj_consume_token(tCONST_CHAR);
 at.name = "CONST_CHAR";
                 at.isVar = false;
                 at.type = Symbol.Types.CHAR;
                 at.isConst = true;
+                // -------------------------------
+                System.out.println(ANSI_YELLOW + t2.image + ANSI_RESET);
+                at.code.addInst(OpCode.STC, ((int)(t2.image).charAt(1)) );
+                System.out.println(ANSI_YELLOW + "ascii: " + ((int)(t2.image).charAt(1)) + ANSI_RESET);
           break;
           }
         case tCONST_STRING:{
-          jj_consume_token(tCONST_STRING);
+          t3 = jj_consume_token(tCONST_STRING);
 //rn sf.primario_8(t); 
                 at.name = "CONST_STRING";
                 at.isVar = false;
                 at.type = Symbol.Types.STRING;
                 at.isConst = true;
+                // -------------------------------
+                // Como se almacena un string?
+
           break;
           }
         case tTRUE:{
@@ -2163,6 +2173,8 @@ at.name = "TRUE";
                 at.isVar = false;
                 at.type = Symbol.Types.BOOL;
                 at.isConst = true;
+                // -------------------------------
+                at.code.addInst(OpCode.STC, 1);
           break;
           }
         case tFALSE:{
@@ -2171,6 +2183,8 @@ at.name = "FALSE";
                 at.isVar = false;
                 at.type = Symbol.Types.BOOL;
                 at.isConst = true;
+                // -------------------------------
+                at.code.addInst(OpCode.STC, 0);
           break;
           }
         default:

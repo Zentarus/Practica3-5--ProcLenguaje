@@ -1615,6 +1615,7 @@ void factor(Attributes at) :
 void primario(Attributes at) :
 {
 	Token t; // revisar
+	Token t1,t2,t3;
 	ArrayList<Attributes> ats = new ArrayList<Attributes>();
 }
 {
@@ -1835,23 +1836,29 @@ void primario(Attributes at) :
 			ErrorSemantico.deteccion(e, t.image);
 		}
 	}
-|	<tCONST_INT> {
+|	t1 = <tCONST_INT> {
 		at.name = "CONST_INT";
 		at.isVar = false;
 		at.type = Symbol.Types.INT;
 		at.isConst = true;
+		// -------------------------------
+		at.code.addInst(OpCode.STC, Integer.valueOf(t1.image));
 	}
-|	<tCONST_CHAR> {
+|	t2 = <tCONST_CHAR> {
 		at.name = "CONST_CHAR";
 		at.isVar = false;
 		at.type = Symbol.Types.CHAR;
 		at.isConst = true;
+		// -------------------------------
+		at.code.addInst(OpCode.STC, ((int)(t2.image).charAt(1)) );
 	}
-|	<tCONST_STRING> { //rn sf.primario_8(t); 
+|	t3 = <tCONST_STRING> { //rn sf.primario_8(t); 
 		at.name = "CONST_STRING";
 		at.isVar = false;
 		at.type = Symbol.Types.STRING;
 		at.isConst = true;
+		// -------------------------------
+		// Como se almacena un string?
 	}
 
 |	<tTRUE> {
@@ -1859,12 +1866,16 @@ void primario(Attributes at) :
 		at.isVar = false;
 		at.type = Symbol.Types.BOOL;
 		at.isConst = true;
+		// -------------------------------
+		at.code.addInst(OpCode.STC, 1);
 	}
 |	<tFALSE> {
 		at.name = "FALSE";
 		at.isVar = false;
 		at.type = Symbol.Types.BOOL;
 		at.isConst = true;
+		// -------------------------------
+		at.code.addInst(OpCode.STC, 0);
 	}
 }
 
