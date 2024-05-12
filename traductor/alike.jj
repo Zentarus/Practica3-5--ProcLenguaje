@@ -125,7 +125,7 @@ public class alike {
 				System.out.println(ANSI_RED + "***** Analisis terminado sin exito, errores semanticos *****" + ANSI_RESET);
 		   }
 		   else{
-				System.out.println("***** Compilacion finalizada. Se ha generado el fichero <nombreFichero>.pcode *****");
+				System.out.println("***** Compilacion finalizada. Se ha generado el fichero " + obtenerNombreArchivoPCode(nombreFichero) + " *****");
 				try {
 					escribirEnNuevoArchivo(nombreFichero, at.code.toString());
 				} catch (IOException e) {
@@ -712,6 +712,8 @@ void inst_invocacion_o_asignacion(Attributes at):
 		catch(SymbolNotFoundException e){
 			ErrorSemantico.deteccion(e, at1.name);
 		}
+		// ----------------------------------------------
+		at.code = at1.code;
 	}
 	(<tASIGN> 
 	 expresion(at2) {
@@ -767,8 +769,11 @@ void inst_invocacion_o_asignacion(Attributes at):
 		catch (SymbolNotFoundException e){
 			ErrorSemantico.deteccion(e, ("at1.name: " + at1.name + ", at2.name: " + at2.name));
 		}
+		// ---------------------- GENERACION DE CODIGO ------------------------------
+		at.code.addBlock(at1.code);
+		at.code.addBlock(at2.code);
+		at.code.addInst(OpCode.ASG);
 	 } 
-	
 	) ? 
 
 }
@@ -919,9 +924,10 @@ void expresion(Attributes at) :
 {	
 	relacion(at1) {
 		at.type = at1.type;
-		//System.out.println(ANSI_YELLOW + at.type + ANSI_RESET);
 		at.isVecComp = at1.isVecComp;
 		at.name = at1.name;
+		// -----------------------------------------
+		at.code = at1.code;
 	}
 	(((<tAND> {operador = 0;}  relacion(at2) 
 		{
@@ -1025,9 +1031,7 @@ void relacion(Attributes at) :
 		at.isConst = at1.isConst;
 		at.isVar = at1.isVar;
 		at.isVecComp = at1.isVecComp;
-
 		// ----------------------------------------------------
-		
 		at.code = at1.code;
 		
 	}

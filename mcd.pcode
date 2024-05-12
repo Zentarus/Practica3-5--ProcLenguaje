@@ -1,0 +1,111 @@
+  ENP L0
+  SRF  0
+  DRF
+  SRF  0
+  DRF
+  STC  0
+  ASG
+  SRF  0
+  DRF
+  SRF  0
+  DRF
+  STC  0
+  ASG
+L1:
+  JMF L2
+  JMF L3
+  JMP L4
+L3:
+L4:
+  JMP L1
+L2:
+  SRF  0
+  DRF
+  SRF  0
+  DRF
+  STC  0
+  ASG
+  SRF  0
+  DRF
+  SRF  0
+  DRF
+  STC  0
+  ASG
+L1:
+  JMF L2
+  JMF L3
+  JMP L4
+L3:
+L4:
+  JMP L1
+L2:
+  SRF  0
+  DRF
+  SRF  0
+  DRF
+  SRF  0
+  DRF
+  ASG
+  SRF  0
+  DRF
+  SRF  0
+  DRF
+  SRF  0
+  DRF
+  ASG
+  SRF  0
+  DRF
+  SRF  0
+  DRF
+  SRF  0
+  DRF
+  SRF  0
+  DRF
+  SRF  0
+  DRF
+  MOD
+  ASG
+  SRF  0
+  DRF
+  SRF  0
+  DRF
+  SRF  0
+  DRF
+  SRF  0
+  DRF
+  SRF  0
+  DRF
+  MOD
+  ASG
+L5:
+  JMF L6
+  SRF  0
+  DRF
+  SRF  0
+  DRF
+  SRF  0
+  DRF
+  ASG
+  SRF  0
+  DRF
+  SRF  0
+  DRF
+  SRF  0
+  DRF
+  ASG
+  SRF  0
+  DRF
+  SRF  0
+  DRF
+  SRF  0
+  DRF
+  SRF  0
+  DRF
+  SRF  0
+  DRF
+  MOD
+  ASG
+  JMP L5
+L6:
+  SRF  0
+  DRF
