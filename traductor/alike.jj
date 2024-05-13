@@ -308,6 +308,7 @@ void Programa(Attributes at) :
 		// ------------------------------------------------
 		String etiqINI_PROGRAM = CGUtils.newLabel();
 		at.code.addInst(OpCode.ENP, etiqINI_PROGRAM);
+		at.code.addLabel(etiqINI_PROGRAM);
 	}
 	
 	<tIS>
@@ -321,7 +322,7 @@ void Programa(Attributes at) :
 		System.err.println(st.toString());
 		st.removeBlock();
 	}
-	<EOF>
+	<EOF> {at.code.addInst(OpCode.LVP);}
 }
 	
 void declaracion_procs_funcs(Attributes at) :

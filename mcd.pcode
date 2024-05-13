@@ -1,4 +1,5 @@
   ENP L0
+L0:
   SRF  0
   DRF
   SRF  0
@@ -13,6 +14,10 @@
   ASG
 L1:
   JMF L2
+  SRF  1  3
+  RD  1
+  SRF  1  3
+  RD  1
   JMF L3
   JMP L4
 L3:
@@ -33,6 +38,10 @@ L2:
   ASG
 L1:
   JMF L2
+  SRF  1  3
+  RD  1
+  SRF  1  3
+  RD  1
   JMF L3
   JMP L4
 L3:
@@ -109,3 +118,19 @@ L5:
 L6:
   SRF  0
   DRF
+  SRF  0  3
+  DRF
+  WRT  1
+  SRF  0  3
+  DRF
+  WRT  1
+  SRF  0  3
+  DRF
+  WRT  1
+  SRF  0  3
+  DRF
+  WRT  1
+  SRF  0  3
+  DRF
+  WRT  1
+  LVP

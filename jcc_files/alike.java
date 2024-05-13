@@ -170,6 +170,7 @@ Symbol s;
                 // ------------------------------------------------
                 String etiqINI_PROGRAM = CGUtils.newLabel();
                 at.code.addInst(OpCode.ENP, etiqINI_PROGRAM);
+                at.code.addLabel(etiqINI_PROGRAM);
     jj_consume_token(tIS);
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case tID:{
@@ -198,6 +199,7 @@ at.code.addBlock(at1.code);
 System.err.println(st.toString());
                 st.removeBlock();
     jj_consume_token(0);
+at.code.addInst(OpCode.LVP);
 }
 
   static final public void declaracion_procs_funcs(Attributes at) throws ParseException {Attributes at1 = new Attributes();
