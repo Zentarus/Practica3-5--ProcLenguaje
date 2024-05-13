@@ -609,7 +609,7 @@ void cabecera_funcion(Attributes at) :
 
 
 
-void inst_leer():
+void inst_leer(Attributes at):
 {
 	ArrayList<Token> ids;
 }
@@ -622,6 +622,14 @@ void inst_leer():
 				Symbol s = st.getSymbol(t.image);
 				if (!((s.type == Symbol.Types.CHAR) || (s.type == Symbol.Types.INT))) {
 					ErrorSemantico.deteccion("Se esperaba caracter o entero <inst_leer>");
+				}
+				if (s.type == Symbol.Types.INT) {
+					at.code.addInst(OpCode.SRF, st.level, 3); //REVISAR QUE PARÁMETROS PASAMOS A ESTAS INSTRUCCIONES
+					at.code.addInst(OpCode.RD, 1);
+				}
+				else if (s.type == Symbol.Types.CHAR) {
+					at.code.addInst(OpCode.SRF, st.level, 3 + 1);
+					at.code.addInst(OpCode.RD, 0);
 				}
 			}
 			catch(SymbolNotFoundException e){
@@ -645,17 +653,20 @@ ArrayList<Token> lista_asignables():
 
 
 
-void inst_saltar_linea():
+void inst_saltar_linea(Attributes at):
 {
 
 }
 {
-	<tSKIP_LN>
+	<tSKIP_LN> {
+		at.code.addInst(OpCode.RD, 0);
+		at.code.addInst(OpCode.POP);
+	}
 }
 
 
 
-void inst_escribir():
+void inst_escribir(Attributes at):
 {
 	ArrayList<Attributes> ats = new ArrayList<Attributes>();
 }
@@ -663,10 +674,20 @@ void inst_escribir():
 	<tPUT> <tPARENTESIS_OPEN>
 	lista_una_o_mas_exps(ats)
 	{
-		for (Attributes at : ats) {
-			if (!((at.type == Symbol.Types.INT) || (at.type == Symbol.Types.BOOL) || 
-			      (at.type == Symbol.Types.CHAR) || (at.type == Symbol.Types.STRING))) {
+		for (Attributes att : ats) {
+			if (!((att.type == Symbol.Types.INT) || (att.type == Symbol.Types.BOOL) || 
+			      (att.type == Symbol.Types.CHAR) || (att.type == Symbol.Types.STRING))) {
 				ErrorSemantico.deteccion("Se esperaba entero, booleano, caracter o string <inst_escribir>");
+			}
+			if (att.type == Symbol.Types.INT) {
+				at.code.addInst(OpCode.SRF, st.level, 3);
+				at.code.addInst(OpCode.DRF);
+				at.code.addInst(OpCode.WRT, 1);
+			}
+			else if (att.type == Symbol.Types.CHAR) {
+				at.code.addInst(OpCode.SRF, st.level, 3);
+				at.code.addInst(OpCode.DRF);
+				at.code.addInst(OpCode.WRT, 0);
 			}
 		}
 	}
@@ -675,7 +696,7 @@ void inst_escribir():
 
 
 
-void inst_escribir_linea(): 
+void inst_escribir_linea(Attributes at): 
 {
 	ArrayList<Attributes> ats = new ArrayList<Attributes>();
 }
@@ -684,11 +705,21 @@ void inst_escribir_linea():
 	(<tPARENTESIS_OPEN> 
 	lista_una_o_mas_exps(ats)
 	{
-		for (Attributes at : ats) {
-			if (!((at.type == Symbol.Types.INT) || (at.type == Symbol.Types.BOOL) 
-			|| (at.type == Symbol.Types.CHAR) || (at.type == Symbol.Types.STRING))) {
-				System.err.println(at.type);
+		for (Attributes att : ats) {
+			if (!((att.type == Symbol.Types.INT) || (att.type == Symbol.Types.BOOL) 
+			|| (att.type == Symbol.Types.CHAR) || (att.type == Symbol.Types.STRING))) {
+				System.err.println(att.type);
 				ErrorSemantico.deteccion("Se esperaba entero, booleano, caracter o string <inst_escribir_linea>");
+			}
+			if (att.type == Symbol.Types.INT) {
+				at.code.addInst(OpCode.SRF, st.level, 3);
+				at.code.addInst(OpCode.DRF);
+				at.code.addInst(OpCode.WRT, 1);
+			}
+			else if (at.type == Symbol.Types.CHAR) {
+				at.code.addInst(OpCode.SRF, st.level, 3);
+				at.code.addInst(OpCode.DRF);
+				att.code.addInst(OpCode.WRT, 0);
 			}
 		}
 	}
@@ -871,10 +902,10 @@ void instruccion_return(Attributes at) :
 	
 }
 {
-	( inst_leer() )
-|   ( inst_saltar_linea() )
-|	( inst_escribir() )
-|   ( inst_escribir_linea() )
+	( inst_leer(at) )
+|   ( inst_saltar_linea(at) )
+|	( inst_escribir(at) )
+|   ( inst_escribir_linea(at) )
 |   ( inst_invocacion_o_asignacion(at) )
 |   ( inst_if(at) )
 |   ( inst_while(at) )
@@ -888,10 +919,10 @@ void instruccion(Attributes at) :
 
 }
 {
-	( inst_leer() )
-|   ( inst_saltar_linea() )
-|	( inst_escribir() )
-|   ( inst_escribir_linea() )
+	( inst_leer(at) )
+|   ( inst_saltar_linea(at) )
+|	( inst_escribir(at) )
+|   ( inst_escribir_linea(at) )
 |   ( inst_invocacion_o_asignacion(at) )
 |   ( inst_if(at) )
 |   ( inst_while(at) )

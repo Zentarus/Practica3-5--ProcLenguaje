@@ -23,34 +23,34 @@ import lib.symbolTable.exceptions.SymbolNotFoundException;
 import lib.symbolTable.exceptions.AlreadyDefinedSymbolException;
 
 public class SymbolTable {
-	private final int ST_SIZE = 16; //hasta 16 niveles
-    private final int HASH_SIZE = 1023; //buckets
+    private final int ST_SIZE = 16; // hasta 16 niveles
+    private final int HASH_SIZE = 1023; // buckets
     private ArrayList<HashMap<String, Symbol>> st;
 
-    public int level; //nivel actual
+    public int level; // nivel actual
 
     public SymbolTable() {
         st = new ArrayList<HashMap<String, Symbol>>(ST_SIZE);
-        level = -1; //aún no hay ningún bloque intoducido
+        level = -1; // aún no hay ningún bloque intoducido
         insertBlock();
     }
-    
-    //apila un nuevo bloque
+
+    // apila un nuevo bloque
     public void insertBlock() {
         st.add(new HashMap<String, Symbol>(HASH_SIZE));
         level++;
     }
 
-    //elimina un bloque
+    // elimina un bloque
     public void removeBlock() {
-        st.remove(st.size()-1);
+        st.remove(st.size() - 1);
         level--;
     }
-    
-    //Si un símbolo con el mismo nombre está, excepción. 
-    //Si no, se inserta
+
+    // Si un símbolo con el mismo nombre está, excepción.
+    // Si no, se inserta
     public void insertSymbol(Symbol s) throws AlreadyDefinedSymbolException {
-        HashMap<String, Symbol> currentBlock = st.get(st.size()-1);
+        HashMap<String, Symbol> currentBlock = st.get(st.size() - 1);
         if (currentBlock.containsKey(s.name)) { // ya está
             throw new AlreadyDefinedSymbolException();
         } else {
@@ -59,46 +59,46 @@ public class SymbolTable {
         }
     }
 
-    //Si no está, excepción. Si está, devuelve su referencia
-    public Symbol getSymbol (String name) throws SymbolNotFoundException {
-    	Symbol result = findSymbol(name); 
+    // Si no está, excepción. Si está, devuelve su referencia
+    public Symbol getSymbol(String name) throws SymbolNotFoundException {
+        Symbol result = findSymbol(name);
         if (result == null) {
-        	throw new SymbolNotFoundException();
+            throw new SymbolNotFoundException();
         }
-        return result; 
+        return result;
     }
-    
-    // comprueba si está el símbolo 
-    public boolean containsSymbol (String name) {
-    	return findSymbol(name) != null; 
+
+    // comprueba si está el símbolo
+    public boolean containsSymbol(String name) {
+        return findSymbol(name) != null;
     }
-    
-    //para usar en "getSymbol" y "containsSymbol"
-    private Symbol findSymbol (String name) {
-    	for (int i=st.size()-1; i>=0; i--) {
+
+    // para usar en "getSymbol" y "containsSymbol"
+    private Symbol findSymbol(String name) {
+        for (int i = st.size() - 1; i >= 0; i--) {
             if (st.get(i).containsKey(name)) {
                 return st.get(i).get(name);
             }
         }
-        return null; 
+        return null;
     }
 
-    //devuelve la tabla como un string
+    // devuelve la tabla como un string
     public String toString() {
-    	final String linea = "------------------------------------------------\n";
-    	StringBuilder builder = new StringBuilder(); 
-        builder.append(linea); 
+        final String linea = "------------------------------------------------\n";
+        StringBuilder builder = new StringBuilder();
+        builder.append(linea);
         String tabs = "";
-        for (int i=0; i<st.size(); i++) {
+        for (int i = 0; i < st.size(); i++) {
             for (Map.Entry entry : st.get(i).entrySet()) {
-				//crear secuencia de tabuladores
+                // crear secuencia de tabuladores
                 tabs = new String(new char[i]).replace("\0", "\t");
-                builder.append(tabs); 
-                builder.append(entry.toString()); 
-                builder.append("\n"); 
+                builder.append(tabs);
+                builder.append(entry.toString());
+                builder.append("\n");
             }
         }
-        builder.append(linea); 
+        builder.append(linea);
         return builder.toString();
     }
 }
