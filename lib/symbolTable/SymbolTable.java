@@ -28,6 +28,16 @@ public class SymbolTable {
     private ArrayList<HashMap<String, Symbol>> st;
 
     public int level; // nivel actual
+    public static int[] direccionPorNivel = new int[16]; // Su indice representa el nivel
+
+    // Bloque estático de inicialización
+    static {
+        // Inicialización de todas las componentes al valor 3
+        for (int i = 0; i < direccionPorNivel.length; i++) {
+            direccionPorNivel[i] = 3; // Todas las direcciones empiezan en 3, debido a los punteros que se guardan a
+                                      // otras estructuras
+        }
+    }
 
     public SymbolTable() {
         st = new ArrayList<HashMap<String, Symbol>>(ST_SIZE);
@@ -55,6 +65,15 @@ public class SymbolTable {
             throw new AlreadyDefinedSymbolException();
         } else {
             s.nivel = level;
+            if (!(s instanceof SymbolFunction || s instanceof SymbolProcedure)) {
+                // No se guardan direcciones del id de procedimientos o funciones
+
+                // Ids de variables de tipo entero, char, etc...
+                s.dir = direccionPorNivel[level]; // Asignamos la dirección que le corresponde
+                direccionPorNivel[level] = direccionPorNivel[level] + 1; // Aumentamos la dirección para la
+                                                                         // siguiente
+                                                                         // variable a almacenar
+            }
             currentBlock.put(s.name, s);
         }
     }

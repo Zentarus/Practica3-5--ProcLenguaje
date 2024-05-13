@@ -1,22 +1,17 @@
   ENP L0
-L0:
-  SRF  0
-  DRF
-  SRF  0
+  SRF  0  3
   DRF
   STC  0
   ASG
-  SRF  0
-  DRF
-  SRF  0
+  SRF  0  3
   DRF
   STC  0
   ASG
 L1:
   JMF L2
-  SRF  1  3
+  SRF  0  3
   RD  1
-  SRF  1  3
+  SRF  0  3
   RD  1
   JMF L3
   JMP L4
@@ -24,23 +19,19 @@ L3:
 L4:
   JMP L1
 L2:
-  SRF  0
-  DRF
-  SRF  0
+  SRF  0  3
   DRF
   STC  0
   ASG
-  SRF  0
-  DRF
-  SRF  0
+  SRF  0  3
   DRF
   STC  0
   ASG
 L1:
   JMF L2
-  SRF  1  3
+  SRF  0  3
   RD  1
-  SRF  1  3
+  SRF  0  3
   RD  1
   JMF L3
   JMP L4
@@ -48,76 +39,57 @@ L3:
 L4:
   JMP L1
 L2:
-  SRF  0
+  SRF  0  7
   DRF
-  SRF  0
-  DRF
-  SRF  0
+  SRF  0  4
   DRF
   ASG
-  SRF  0
+  SRF  0  8
   DRF
-  SRF  0
-  DRF
-  SRF  0
+  SRF  0  5
   DRF
   ASG
-  SRF  0
+  SRF  0  6
   DRF
-  SRF  0
+  SRF  0  4
   DRF
-  SRF  0
-  DRF
-  SRF  0
-  DRF
-  SRF  0
+  SRF  0  5
   DRF
   MOD
   ASG
-  SRF  0
+  SRF  0  6
   DRF
-  SRF  0
+  SRF  0  4
   DRF
-  SRF  0
-  DRF
-  SRF  0
-  DRF
-  SRF  0
+  SRF  0  5
   DRF
   MOD
   ASG
 L5:
   JMF L6
-  SRF  0
+  SRF  0  7
   DRF
-  SRF  0
-  DRF
-  SRF  0
+  SRF  0  8
   DRF
   ASG
-  SRF  0
+  SRF  0  8
   DRF
-  SRF  0
-  DRF
-  SRF  0
+  SRF  0  6
   DRF
   ASG
-  SRF  0
+  SRF  0  6
   DRF
-  SRF  0
+  SRF  0  7
   DRF
-  SRF  0
-  DRF
-  SRF  0
-  DRF
-  SRF  0
+  SRF  0  8
   DRF
   MOD
   ASG
   JMP L5
 L6:
-  SRF  0
+  SRF  0  8
   DRF
+L0:
   SRF  0  3
   DRF
   WRT  1
