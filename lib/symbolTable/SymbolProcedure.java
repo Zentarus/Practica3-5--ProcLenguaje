@@ -22,17 +22,34 @@ public class SymbolProcedure extends Symbol implements Cloneable {
     // necesario mantener la información de los parámetros.
     public ArrayList<Symbol> parList;
     public boolean principal;
+    public String label;
 
     public SymbolProcedure(String _name, ArrayList<Symbol> _parList) {
         super(_name, Types.PROCEDURE, ParameterClass.NONE);
         parList = _parList;
         principal = false;
+        label = "";
     }
 
     public SymbolProcedure(String _name, ArrayList<Symbol> _parList, boolean _principal) {
         super(_name, Types.PROCEDURE, ParameterClass.NONE);
         parList = _parList;
         principal = _principal;
+        label = "";
+    }
+
+    public SymbolProcedure(String _name, ArrayList<Symbol> _parList, String _label) {
+        super(_name, Types.PROCEDURE, ParameterClass.NONE);
+        parList = _parList;
+        principal = false;
+        label = _label;
+    }
+
+    public SymbolProcedure(String _name, ArrayList<Symbol> _parList, String _label, boolean _principal) {
+        super(_name, Types.PROCEDURE, ParameterClass.NONE);
+        parList = _parList;
+        principal = _principal;
+        label = _label;
     }
 
     public String toString() {

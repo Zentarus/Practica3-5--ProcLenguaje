@@ -8,7 +8,7 @@
 options {
 	IGNORE_CASE = true;
 	COMMON_TOKEN_ACTION = false;
-	DEBUG_PARSER = true;
+	DEBUG_PARSER = false;
 }
 
 // -----------------------------------------------------------------------------
@@ -326,10 +326,10 @@ void Programa(Attributes at) :
 	
 void declaracion_procs_funcs(Attributes at) :
 {
-	Attributes at1 = new Attributes();
+	
 }
 {
-	( declaracion_proc_func(at1) {at.code.addBlock(at1.code);} )+
+	( declaracion_proc_func(at) )+
 }
 
 void declaracion_proc_func(Attributes at) :
@@ -534,7 +534,12 @@ void cabecera_procedimiento(Attributes at) :
 	t = <tID> {
 		Symbol s;
 		at.parList = new ArrayList<Symbol>();
-		s = new SymbolProcedure(t.image,at.parList);
+
+		String etiq = CGUtils.newLabel();
+		at.code.addLabel(etiq);
+		at.code.addBlock(at1.code);
+
+		s = new SymbolProcedure(t.image,at.parList,etiq);
 		try {
 			st.insertSymbol(s);	
 			st.insertBlock();
@@ -579,7 +584,12 @@ void cabecera_funcion(Attributes at) :
 	t = <tID> {
 		Symbol s;
 		at.parList = new ArrayList<Symbol>();
-		s = new SymbolFunction(t.image, at.parList, at1.type);
+		
+		String etiq = CGUtils.newLabel();
+		at.code.addLabel(etiq);
+		at.code.addBlock(at1.code);
+
+		s = new SymbolFunction(t.image, at.parList, at1.type, etiq);
 		try {
 			st.insertSymbol(s);
 			st.insertBlock();
@@ -740,8 +750,11 @@ void inst_invocacion_o_asignacion(Attributes at):
 			if ((s instanceof SymbolProcedure) && (((SymbolProcedure) s).principal)) {
 				ErrorSemantico.deteccion("El procedimiento principal no es invocable");
 			}
-			if ((s instanceof SymbolProcedure) || (s instanceof SymbolFunction)) {
-				//at.code.addInst(OpCode)
+			if (s instanceof SymbolProcedure) {
+				at.code.addOSFInst(st.level,(st.level - ((SymbolProcedure)s).nivel), ((SymbolProcedure)s).label);
+			}
+			else if (s instanceof SymbolFunction){
+				at.code.addOSFInst(st.level,(st.level - ((SymbolFunction)s).nivel), ((SymbolFunction)s).label);
 			}
 		}
 		catch(SymbolNotFoundException e){
@@ -785,7 +798,7 @@ void inst_invocacion_o_asignacion(Attributes at):
 				// Si es una componente de vector y tipos at1 y at2 iguales -> OK
 				if(s instanceof SymbolArray){
 					if(at1.isVecComp && (((SymbolArray) s).baseType != at2.type)){
-						System.out.println(at1.name);
+						//System.out.println(at1.name);
 						ErrorSemantico.deteccion("La componente del vector no es del tipo del vector");
 					}
 				}
@@ -898,16 +911,26 @@ void inst_return(Attributes at):
 			String _error = "Tipo incompatible a devolver en return, (" + at.type.toString() + ") <inst_return>";
 			ErrorSemantico.deteccion(_error);	
 		}
-		try {
-			Symbol s = st.getSymbol(at.name);
-
-			at.code.addInst(OpCode.SRF, (st.level - s.nivel), (int)s.dir);
-			at.code.addInst(OpCode.DRF);
+		if (at.isConst) {
+			at.code.addInst(OpCode.STC, 0); //No podemos meter una constante cualquiera
 			at.code.addInst(OpCode.CSF);
-		} catch (SymbolNotFoundException e) {
-			ErrorSemantico.deteccion(e, at.name);
 		}
-		
+		else {
+			try {
+				Symbol s = st.getSymbol(at.name);
+
+				if (s instanceof SymbolFunction) {
+					at.code.addInst(OpCode.CSF);
+				}
+				else {
+					at.code.addInst(OpCode.SRF, (st.level - s.nivel), (int)s.dir);
+					at.code.addInst(OpCode.DRF);
+					at.code.addInst(OpCode.CSF);
+				}
+			} catch (SymbolNotFoundException e) {
+				ErrorSemantico.deteccion(e, at.name);
+			}
+		}
 	}
 }
 
@@ -985,13 +1008,13 @@ void expresion(Attributes at) :
 		at.name = at1.name;
 		// -----------------------------------------
 		at.code = at1.code;
-		System.out.println(ANSI_YELLOW + "<expresion> " + at.code + ANSI_RESET);
+		//System.out.println(ANSI_YELLOW + "<expresion> " + at.code + ANSI_RESET);
 	}
 	(((<tAND> {operador = 0;}  relacion(at2) 
 		{
-			//System.out.println(ANSI_YELLOW + at1.type + ", " + at2.type + ANSI_RESET);	
+			////System.out.println(ANSI_YELLOW + at1.type + ", " + at2.type + ANSI_RESET);	
 			if (!((at1.type == at2.type) && (at1.type == Symbol.Types.BOOL))) {
-				System.out.println(ANSI_YELLOW + "at1.type: " + at1.type + ", at2.type: " + at2.type + ANSI_RESET);
+				//System.out.println(ANSI_YELLOW + "at1.type: " + at1.type + ", at2.type: " + at2.type + ANSI_RESET);
 				at.type = Symbol.Types.UNDEFINED;
 				ErrorSemantico.deteccion("Se esperaban booleanos");
 			}
@@ -1015,7 +1038,7 @@ void expresion(Attributes at) :
 		{
 			//System.out.println(ANSI_YELLOW + at1.type + ", " + at2.type + ANSI_RESET);	
 			if (!((at1.type == at2.type) && (at1.type == Symbol.Types.BOOL))) {
-				System.out.println(ANSI_YELLOW + "at1.type: " + at1.type + ", at2.type: " + at2.type + ANSI_RESET);
+				//System.out.println(ANSI_YELLOW + "at1.type: " + at1.type + ", at2.type: " + at2.type + ANSI_RESET);
 				at.type = Symbol.Types.UNDEFINED;
 				ErrorSemantico.deteccion("Se esperaban booleanos");
 			}
@@ -1308,7 +1331,7 @@ void relacion(Attributes at) :
 				at.code.addInst(OpCode.NEQ);
 				break;
 		}
-		System.out.println(ANSI_YELLOW + at.code + ANSI_RESET);
+		//System.out.println(ANSI_YELLOW + at.code + ANSI_RESET);
 	} 
 	)?
 }
