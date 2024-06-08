@@ -19,66 +19,123 @@ L1:
   STC  0
   GT
   JMT L3
+  STC 69
   WRT  0
+  STC 114
   WRT  0
+  STC 114
   WRT  0
+  STC 111
   WRT  0
+  STC 114
   WRT  0
+  STC 32
   WRT  0
+  STC 101
   WRT  0
+  STC 110
   WRT  0
+  STC 32
   WRT  0
+  STC 108
   WRT  0
+  STC 97
   WRT  0
+  STC 32
   WRT  0
+  STC 108
   WRT  0
+  STC 105
   WRT  0
+  STC 110
   WRT  0
+  STC 101
   WRT  0
+  STC 97
   WRT  0
+  STC 32
   WRT  0
+  STC 49
   WRT  0
+  STC 50
   WRT  0
+  STC 58
   WRT  0
+  STC 32
   WRT  0
+  STC 34
   WRT  0
+  STC 39
   WRT  0
+  STC 99
   WRT  0
+  STC 111
   WRT  0
+  STC 108
   WRT  0
+  STC 111
   WRT  0
+  STC 110
   WRT  0
+  STC 105
   WRT  0
+  STC 97
   WRT  0
+  STC 40
   WRT  0
+  STC 105
   WRT  0
+  STC 41
   WRT  0
+  STC 39
   WRT  0
+  STC 32
   WRT  0
+  STC 116
   WRT  0
+  STC 105
   WRT  0
+  STC 101
   WRT  0
+  STC 110
   WRT  0
+  STC 101
   WRT  0
+  STC 32
   WRT  0
+  STC 113
   WRT  0
+  STC 117
   WRT  0
+  STC 101
   WRT  0
+  STC 32
   WRT  0
+  STC 115
   WRT  0
+  STC 101
   WRT  0
+  STC 114
   WRT  0
+  STC 32
   WRT  0
+  STC 112
   WRT  0
+  STC 111
   WRT  0
+  STC 115
   WRT  0
+  STC 105
   WRT  0
+  STC 116
   WRT  0
+  STC 105
   WRT  0
+  STC 118
   WRT  0
+  STC 111
   WRT  0
-  WRT  0
-  WRT  0
+  STC 34
   WRT  0
   LVP
 L3:
@@ -107,70 +164,127 @@ L2:
   DRF
   EQ
   JMT L4
+  STC 69
   WRT  0
+  STC 114
   WRT  0
+  STC 114
   WRT  0
+  STC 111
   WRT  0
+  STC 114
   WRT  0
+  STC 32
   WRT  0
+  STC 101
   WRT  0
+  STC 110
   WRT  0
+  STC 32
   WRT  0
+  STC 108
   WRT  0
+  STC 97
   WRT  0
+  STC 32
   WRT  0
+  STC 108
   WRT  0
+  STC 105
   WRT  0
+  STC 110
   WRT  0
+  STC 101
   WRT  0
+  STC 97
   WRT  0
+  STC 32
   WRT  0
+  STC 49
   WRT  0
+  STC 54
   WRT  0
+  STC 58
   WRT  0
+  STC 32
   WRT  0
+  STC 34
   WRT  0
+  STC 39
   WRT  0
+  STC 105
   WRT  0
+  STC 39
   WRT  0
+  STC 32
   WRT  0
+  STC 121
   WRT  0
+  STC 32
   WRT  0
+  STC 39
   WRT  0
+  STC 106
   WRT  0
+  STC 39
   WRT  0
+  STC 32
   WRT  0
+  STC 104
   WRT  0
+  STC 97
   WRT  0
+  STC 110
   WRT  0
+  STC 32
   WRT  0
+  STC 100
   WRT  0
+  STC 101
   WRT  0
+  STC 32
   WRT  0
+  STC 116
   WRT  0
+  STC 101
   WRT  0
+  STC 110
   WRT  0
+  STC 101
   WRT  0
+  STC 114
   WRT  0
+  STC 32
   WRT  0
+  STC 101
   WRT  0
+  STC 108
   WRT  0
+  STC 32
   WRT  0
+  STC 109
   WRT  0
+  STC 105
   WRT  0
+  STC 115
   WRT  0
+  STC 109
   WRT  0
+  STC 111
   WRT  0
+  STC 32
   WRT  0
+  STC 118
   WRT  0
+  STC 97
   WRT  0
+  STC 108
   WRT  0
+  STC 111
   WRT  0
+  STC 114
   WRT  0
-  WRT  0
-  WRT  0
-  WRT  0
-  WRT  0
+  STC 34
   WRT  0
   LVP
 L4:

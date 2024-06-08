@@ -965,14 +965,13 @@ at.code.addInst(OpCode.NOP);
                 }
     jj_consume_token(tDOBLEPUNTO);
     t = jj_consume_token(tCONST_STRING);
-String linea_error = new String("Error en la linea " + t.beginLine + ": " + t.image);
+String linea_error = ("Error en la linea " + t.beginLine + ": " + t.image);
 
                 for (int i = 0; i < linea_error.length(); i++) {
-                        System.out.print(ANSI_YELLOW + linea_error.charAt(i) + ANSI_RESET);
-                        //at.code.addInst(OpCode.STC, (int) t.image.charAt(i));
+                        at.code.addInst(OpCode.STC, (int) linea_error.charAt(i));
                         at.code.addInst(OpCode.WRT, 0);
                 }
-                System.out.println();
+
                 at.code.addInst(OpCode.LVP);
                 at.code.addLabel(etiq_OK);
 }

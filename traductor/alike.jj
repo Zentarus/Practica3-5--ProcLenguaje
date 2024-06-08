@@ -173,7 +173,7 @@ TOKEN : { // Tipos
 |	< tARRAY: "array" >
 |	< tCONST_INT: (["0"-"9"])+ >
 |	< tCONST_CHAR: "\'"(~["\n","\t","\r","\f","\b","\'","\""] | ("\"\"") | ("\'\'"))"\'" >
-| 	< tCONST_STRING: "\""(~["\n","\t","\r","\f","\b","\'","\""] | ("\"\"") | ("\'\'"))*"\"" >
+| 	< tCONST_STRING: "\""(~["\n","\t","\r","\f","\b","\""] | ("\"\""))*"\"" > // Modificado
 }
 
 TOKEN : { // Operadores
@@ -969,12 +969,14 @@ void inst_asercion(Attributes at):
 	}
 	<tDOBLEPUNTO> 
 	t = <tCONST_STRING> {
-		String linea_error = new String("Error en la linea " + t.beginLine + ": " + t.image);
+
+		String linea_error = ("Error en la linea " + t.beginLine + ": " + t.image);
 
 		for (int i = 0; i < linea_error.length(); i++) {
-			at.code.addInst(OpCode.STC, (int) t.image.charAt(i));
+			at.code.addInst(OpCode.STC, (int) linea_error.charAt(i));
 			at.code.addInst(OpCode.WRT, 0);
 		}
+
 		at.code.addInst(OpCode.LVP);
 		at.code.addLabel(etiq_OK);
 	}

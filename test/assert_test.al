@@ -9,9 +9,9 @@ begin
     get(i);
     get(j);
     while i <= 80 loop
-        assert: colonia(i)>0 : "''colonia(i)'' tiene que ser positivo";
+        assert: colonia(i)>0 : "'colonia(i)' tiene que ser positivo";
     colonia(i) := (i >= 37) and (i <= 43);
     i := i + 1;
 end loop;
-        assert: i=j : "''i'' y ''j'' han de tener el mismo valor";
+        assert: i=j : "'i' y 'j' han de tener el mismo valor";
 end;
