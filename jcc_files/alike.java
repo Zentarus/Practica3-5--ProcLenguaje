@@ -894,12 +894,13 @@ at.code.addLabel(etiqFIN);
 }
 
   static final public void inst_while(Attributes at) throws ParseException {Attributes at1 = new Attributes(), at2 = new Attributes();
+        Symbol.Types at1type = Symbol.Types.UNDEFINED;
     jj_consume_token(tWHILE);
 String etiqExp = CGUtils.newLabel();
                 at.code.addLabel(etiqExp);
     expresion(at1);
 at.code.addBlock(at1.code);
-                if (at1.type != Symbol.Types.BOOL) {
+                if (at1type == Symbol.Types.BOOL) {
                         ErrorSemantico.deteccion("Se esperaba booleano <while>");
                 }
                 String etiqFin = CGUtils.newLabel();
@@ -1149,15 +1150,25 @@ at.type = at1.type;
 operador = 0;
           relacion(at2);
 ////System.out.println(ANSI_YELLOW + at1.type + ", " + at2.type + ANSI_RESET);	
-                        if (!((at1.type == at2.type) && (at1.type == Symbol.Types.BOOL))) {
-                                //System.out.println(ANSI_YELLOW + "at1.type: " + at1.type + ", at2.type: " + at2.type + ANSI_RESET);
+                        Symbol s1 = null, s2 = null;
+                        if(at1.type == Symbol.Types.ARRAY || at1.type == Symbol.Types.FUNCTION){
+                                try {
+                                        s1 = st.getSymbol(at1.name);
+                                }
+                                catch(SymbolNotFoundException e){
+                                        ErrorSemantico.deteccion(e, at1.name);
+                                }
+                        }
+
+                        if ((!((at1.type == at2.type) && (at1.type == Symbol.Types.BOOL))) ||
+                                 ((s1 != null && ((SymbolArray)s1).baseType != Symbol.Types.BOOL) ||
+                                 (s1 != null && ((SymbolFunction)s1).returnType != Symbol.Types.BOOL))){
                                 at.type = Symbol.Types.UNDEFINED;
-                                ErrorSemantico.deteccion("Se esperaban booleanos");
                         }
                         else{
-                                at.type = at1.type;
+                                at.type = at2.type;
                         }
-                        //at.code.addBlock(at1.code); sobra
+
                         at.code.addBlock(at2.code);
                         switch(operador) {
                                 case 0:
@@ -1189,7 +1200,7 @@ operador = 1;
                         if (!((at1.type == at2.type) && (at1.type == Symbol.Types.BOOL))) {
                                 //System.out.println(ANSI_YELLOW + "at1.type: " + at1.type + ", at2.type: " + at2.type + ANSI_RESET);
                                 at.type = Symbol.Types.UNDEFINED;
-                                ErrorSemantico.deteccion("Se esperaban booleanos");
+                                ErrorSemantico.deteccion("Se esperaban booleanos 1");
                         }
                         else{
                                 at.type = at1.type;
@@ -1635,9 +1646,11 @@ if((at1.name != "CONST_INT") && (at2.name != "CONST_INT")){
                                         Symbol s1 = st.getSymbol(at1.name);
                                         Symbol s2 = st.getSymbol(at2.name);
                                         if (s2 instanceof SymbolArray){
-                                                if(((SymbolArray)s2).baseType != Symbol.Types.INT){
+                                                if(((SymbolArray)s2).baseType != Symbol.Types.INT && at2.type != Symbol.Types.INT){
                                                         // error: El primer factor no es un entero
                                                         //System.out.println(ANSI_YELLOW + ((SymbolArray)s2).baseType + ANSI_RESET);
+                                                        System.out.println(ANSI_YELLOW + "at1: " + at1.type + "; at2: " + at2.type + ANSI_RESET);
+                                                        System.out.println(ANSI_YELLOW + ((SymbolArray)s2).name + ", " + ((SymbolArray)s2).baseType + ANSI_RESET);
                                                         ErrorSemantico.deteccion("El segundo termino no es un entero (tipos incompatibles - 1)");
                                                 }
                                                 if (s1 instanceof SymbolArray){
