@@ -214,6 +214,7 @@ TOKEN : { // Sintaxis reservada funciones
 |	< tBEGIN: "begin" >
 |	< tEND: "end" >
 |	< tRETURN: "return" >
+| 	< tASSERT: "assert:" >
 }
 
 TOKEN : { // Instrucciones E/S
@@ -885,10 +886,10 @@ void inst_while(Attributes at):
 		at.code.addLabel(etiqExp);
 	}
 	expresion(at1) {
-		at.code.addBlock(at1.code);
 		if (at1type == Symbol.Types.BOOL) {
 			ErrorSemantico.deteccion("Se esperaba booleano <while>");
 		}
+		at.code.addBlock(at1.code);
 		String etiqFin = CGUtils.newLabel();
 		at.code.addInst(OpCode.JMF, etiqFin);
 	}
@@ -946,6 +947,39 @@ void inst_null(Attributes at):
 }
 
 
+void inst_asercion(Attributes at):
+{
+	Attributes at1 = new Attributes();
+	Token t;
+	String etiq_OK = CGUtils.newLabel();
+}
+{
+	<tASSERT> 
+	expresion(at1) {
+		{
+			if(at1.type != Symbol.Types.BOOL){
+				ErrorSemantico.deteccion("Se esperaba booleano <inst_asercion>");
+			}
+
+			// ---------------------- GENERACION DE CODIGO ------------------------------
+
+			at.code = at1.code;
+			at.code.addInst(OpCode.JMT, etiq_OK);
+		}
+	}
+	<tDOBLEPUNTO> 
+	t = <tCONST_STRING> {
+		String linea_error = new String("Error en la linea " + t.beginLine + ": " + t.image);
+
+		for (int i = 0; i < linea_error.length(); i++) {
+			at.code.addInst(OpCode.STC, (int) t.image.charAt(i));
+			at.code.addInst(OpCode.WRT, 0);
+		}
+		at.code.addInst(OpCode.LVP);
+		at.code.addLabel(etiq_OK);
+	}
+}
+
 
 void instruccion_return(Attributes at) :
 {
@@ -961,6 +995,7 @@ void instruccion_return(Attributes at) :
 |   ( inst_while(at) )
 |   ( inst_return(at) )
 |   ( inst_null(at) )
+|   ( inst_asercion(at) )
 }
 	
 
@@ -977,6 +1012,7 @@ void instruccion(Attributes at) :
 |   ( inst_if(at) )
 |   ( inst_while(at) )
 |   ( inst_null(at) )
+|   ( inst_asercion(at) )
 }
 
 
@@ -1030,7 +1066,7 @@ void expresion(Attributes at) :
 				at.type = Symbol.Types.UNDEFINED;
 			}
 			else{
-				at.type = at2.type;
+				at.type = Symbol.Types.BOOL;
 			}
 
 			at.code.addBlock(at2.code);

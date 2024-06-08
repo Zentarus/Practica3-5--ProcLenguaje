@@ -899,10 +899,10 @@ at.code.addLabel(etiqFIN);
 String etiqExp = CGUtils.newLabel();
                 at.code.addLabel(etiqExp);
     expresion(at1);
-at.code.addBlock(at1.code);
-                if (at1type == Symbol.Types.BOOL) {
+if (at1type == Symbol.Types.BOOL) {
                         ErrorSemantico.deteccion("Se esperaba booleano <while>");
                 }
+                at.code.addBlock(at1.code);
                 String etiqFin = CGUtils.newLabel();
                 at.code.addInst(OpCode.JMF, etiqFin);
     jj_consume_token(tLOOP);
@@ -946,6 +946,35 @@ if (!((at.type == Symbol.Types.INT) || (at.type == Symbol.Types.BOOL) || (at.typ
   static final public void inst_null(Attributes at) throws ParseException {
     jj_consume_token(tNULL);
 at.code.addInst(OpCode.NOP);
+}
+
+  static final public void inst_asercion(Attributes at) throws ParseException {Attributes at1 = new Attributes();
+        Token t;
+        String etiq_OK = CGUtils.newLabel();
+    jj_consume_token(tASSERT);
+    expresion(at1);
+{
+                        if(at1.type != Symbol.Types.BOOL){
+                                ErrorSemantico.deteccion("Se esperaba booleano <inst_asercion>");
+                        }
+
+                        // ---------------------- GENERACION DE CODIGO ------------------------------
+
+                        at.code = at1.code;
+                        at.code.addInst(OpCode.JMT, etiq_OK);
+                }
+    jj_consume_token(tDOBLEPUNTO);
+    t = jj_consume_token(tCONST_STRING);
+String linea_error = new String("Error en la linea " + t.beginLine + ": " + t.image);
+
+                for (int i = 0; i < linea_error.length(); i++) {
+                        System.out.print(ANSI_YELLOW + linea_error.charAt(i) + ANSI_RESET);
+                        //at.code.addInst(OpCode.STC, (int) t.image.charAt(i));
+                        at.code.addInst(OpCode.WRT, 0);
+                }
+                System.out.println();
+                at.code.addInst(OpCode.LVP);
+                at.code.addLabel(etiq_OK);
 }
 
   static final public void instruccion_return(Attributes at) throws ParseException {
@@ -995,6 +1024,10 @@ at.code.addInst(OpCode.NOP);
       }
     case tNULL:{
       inst_null(at);
+      break;
+      }
+    case tASSERT:{
+      inst_asercion(at);
       break;
       }
     default:
@@ -1049,6 +1082,10 @@ at.code.addInst(OpCode.NOP);
       inst_null(at);
       break;
       }
+    case tASSERT:{
+      inst_asercion(at);
+      break;
+      }
     default:
       jj_la1[26] = jj_gen;
       jj_consume_token(-1);
@@ -1074,6 +1111,7 @@ at.code.addBlock(at1.code);
       case tWHILE:
       case tTRUE:
       case tFALSE:
+      case tASSERT:
       case tSKIP_LN:
       case tPUT:
       case tPUT_LN:
@@ -1111,6 +1149,7 @@ at.code.addBlock(at1.code);
       case tTRUE:
       case tFALSE:
       case tRETURN:
+      case tASSERT:
       case tSKIP_LN:
       case tPUT:
       case tPUT_LN:
@@ -1166,7 +1205,7 @@ operador = 0;
                                 at.type = Symbol.Types.UNDEFINED;
                         }
                         else{
-                                at.type = at2.type;
+                                at.type = Symbol.Types.BOOL;
                         }
 
                         at.code.addBlock(at2.code);
@@ -2350,10 +2389,10 @@ at.name = "FALSE";
 	   jj_la1_0 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1e00,0x200000,0x200000,0x0,0x9e00,0x9e00,0x0,0x0,0x0,0x0,0x0,0x80000,0x0,0x0,0x80374000,0x80374000,0x80374000,0x80374000,0x0,0x0,0x0,0x0,0x0,0xfc00000,0xfc00000,0x300000,0x300000,0x300000,0x300000,0x70000000,0x70000000,0x80070000,0x0,0x70000,};
 	}
 	private static void jj_la1_init_1() {
-	   jj_la1_1 = new int[] {0x0,0xc00,0xc00,0xc00,0x0,0xc00,0x0,0xc00,0x2000000,0x0,0x0,0x0,0x0,0x0,0x2000,0x0,0x0,0x10000000,0x80000000,0x80000000,0x2000000,0x80000000,0x0,0x8,0x10,0x80fe0344,0x80fc0344,0x80fc0344,0x80fe0344,0x1,0x2,0x3,0x3,0x2000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x80c00300,0x80c00000,0x300,};
+	   jj_la1_1 = new int[] {0x0,0xc00,0xc00,0xc00,0x0,0xc00,0x0,0xc00,0x4000000,0x0,0x0,0x0,0x0,0x0,0x2000,0x0,0x0,0x20000000,0x0,0x0,0x4000000,0x0,0x0,0x8,0x10,0x1fe0344,0x1fc0344,0x1fc0344,0x1fe0344,0x1,0x2,0x3,0x3,0x4000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1800300,0x1800000,0x300,};
 	}
 	private static void jj_la1_init_2() {
-	   jj_la1_2 = new int[] {0x2,0x0,0x0,0x0,0x2,0x0,0x2,0x0,0x0,0x2,0x2,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x2,0x2,0x2,0x2,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x2,0x0,0x2,};
+	   jj_la1_2 = new int[] {0x4,0x0,0x0,0x0,0x4,0x0,0x4,0x0,0x0,0x4,0x4,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1,0x1,0x0,0x1,0x0,0x0,0x0,0x5,0x5,0x5,0x5,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x5,0x1,0x4,};
 	}
   static final private JJCalls[] jj_2_rtns = new JJCalls[1];
   static private boolean jj_rescan = false;
@@ -2587,7 +2626,7 @@ at.name = "FALSE";
   /** Generate ParseException. */
   static public ParseException generateParseException() {
 	 jj_expentries.clear();
-	 boolean[] la1tokens = new boolean[66];
+	 boolean[] la1tokens = new boolean[67];
 	 if (jj_kind >= 0) {
 	   la1tokens[jj_kind] = true;
 	   jj_kind = -1;
@@ -2607,7 +2646,7 @@ at.name = "FALSE";
 		 }
 	   }
 	 }
-	 for (int i = 0; i < 66; i++) {
+	 for (int i = 0; i < 67; i++) {
 	   if (la1tokens[i]) {
 		 jj_expentry = new int[1];
 		 jj_expentry[0] = i;

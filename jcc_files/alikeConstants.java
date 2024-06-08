@@ -109,37 +109,39 @@ public interface alikeConstants {
   /** RegularExpression Id. */
   int tRETURN = 49;
   /** RegularExpression Id. */
-  int tSKIP_LN = 50;
+  int tASSERT = 50;
   /** RegularExpression Id. */
-  int tPUT = 51;
+  int tSKIP_LN = 51;
   /** RegularExpression Id. */
-  int tPUT_LN = 52;
+  int tPUT = 52;
   /** RegularExpression Id. */
-  int tGET = 53;
+  int tPUT_LN = 53;
   /** RegularExpression Id. */
-  int tCHAR2INT = 54;
+  int tGET = 54;
   /** RegularExpression Id. */
-  int tINT2CHAR = 55;
+  int tCHAR2INT = 55;
   /** RegularExpression Id. */
-  int tPUNTO = 56;
+  int tINT2CHAR = 56;
   /** RegularExpression Id. */
-  int tCOMA = 57;
+  int tPUNTO = 57;
   /** RegularExpression Id. */
-  int tDOSPUNTOS = 58;
+  int tCOMA = 58;
   /** RegularExpression Id. */
-  int tDOBLEPUNTO = 59;
+  int tDOSPUNTOS = 59;
   /** RegularExpression Id. */
-  int tPUNTOCOMA = 60;
+  int tDOBLEPUNTO = 60;
   /** RegularExpression Id. */
-  int tCORCHETES_OPEN = 61;
+  int tPUNTOCOMA = 61;
   /** RegularExpression Id. */
-  int tCORCHETES_CLOSE = 62;
+  int tCORCHETES_OPEN = 62;
   /** RegularExpression Id. */
-  int tPARENTESIS_OPEN = 63;
+  int tCORCHETES_CLOSE = 63;
   /** RegularExpression Id. */
-  int tPARENTESIS_CLOSE = 64;
+  int tPARENTESIS_OPEN = 64;
   /** RegularExpression Id. */
-  int tID = 65;
+  int tPARENTESIS_CLOSE = 65;
+  /** RegularExpression Id. */
+  int tID = 66;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -196,6 +198,7 @@ public interface alikeConstants {
     "\"begin\"",
     "\"end\"",
     "\"return\"",
+    "\"assert:\"",
     "\"skip_line\"",
     "\"put\"",
     "\"put_line\"",
