@@ -911,7 +911,7 @@ void inst_return(Attributes at):
 			String _error = "Tipo incompatible a devolver en return, (" + at.type.toString() + ") <inst_return>";
 			ErrorSemantico.deteccion(_error);	
 		}
-		if (at.isConst) {
+		if (at.name == "CONST_INT" || at.name == "CONST_CHAR" || at.name == "TRUE" || at.name == "FALSE") { // si es constante
 			at.code.addInst(OpCode.STC, 0); //No podemos meter una constante cualquiera
 			at.code.addInst(OpCode.CSF);
 		}
