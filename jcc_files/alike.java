@@ -278,7 +278,7 @@ at2.name = at1.name;
 System.err.println(st.toString());
                 st.removeBlock();
                 at.code.addBlock(at1.code);
-                //at.code.addBlock(at2.code);
+                at.code.addBlock(at2.code);
                 at.code.addBlock(at3.code);
                 at.code.addBlock(at4.code);
 }
@@ -325,7 +325,7 @@ at2.name = at1.name;
 System.err.println(st.toString());
                 st.removeBlock();
                 at.code.addBlock(at1.code);
-                //at.code.addBlock(at2.code);
+                at.code.addBlock(at2.code);
                 at.code.addBlock(at3.code);
                 at.code.addBlock(at4.code);
 }
