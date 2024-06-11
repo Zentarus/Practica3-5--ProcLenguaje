@@ -365,6 +365,7 @@ void declaracion_func(Attributes at):
 		at.code.addBlock(at2.code);
 		at.code.addBlock(at3.code);
 		at.code.addBlock(at4.code);
+		at.code.addInst(OpCode.CSF);
 	}
 }
 
@@ -391,6 +392,7 @@ void declaracion_proc(Attributes at):
 		at.code.addBlock(at2.code);
 		at.code.addBlock(at3.code);
 		at.code.addBlock(at4.code);
+		at.code.addInst(OpCode.CSF);
 	}
 }
 
