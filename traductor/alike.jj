@@ -8,7 +8,7 @@
 options {
 	IGNORE_CASE = true;
 	COMMON_TOKEN_ACTION = false;
-	DEBUG_PARSER = true;
+	DEBUG_PARSER = false;
 }
 
 // -----------------------------------------------------------------------------
@@ -316,6 +316,7 @@ void Programa(Attributes at) :
 	<tIS>
 	(precondicion(at2) { 
 		at.code.addLabel(etiqINI_PROGRAM); 
+		System.out.println("ETIQUETA AÑADIDA: " + etiqINI_PROGRAM);
 		at.code.addBlock(at2.code); 
 		aparece_pre = true; // Pequeño arreglo para evitar doble definición de comienzo de programa
 	})? // Con interrogante para que acepte la demás batería de test
@@ -326,6 +327,7 @@ void Programa(Attributes at) :
 		if(!aparece_pre){
 			// Si no ha aparece pre, hay que añadir la etiqueta de inicio de programa aquí
 			at.code.addLabel(etiqINI_PROGRAM);
+			System.out.println("ETIQUETA AÑADIDA: " + etiqINI_PROGRAM);
 		}
 	}
 	instrucciones(at1) {at.code.addBlock(at1.code);}
@@ -432,6 +434,7 @@ void precondicion(Attributes at) :
 
 			at.code.addInst(OpCode.LVP);
 			at.code.addLabel(etiq_OK);
+			System.out.println("ETIQUETA AÑADIDA: " + etiq_OK);
 		}
 		
 	}
@@ -592,6 +595,7 @@ void cabecera_procedimiento(Attributes at) :
 
 		String etiq = CGUtils.newLabel();
 		at.code.addLabel(etiq);
+		System.out.println("ETIQUETA AÑADIDA: " + etiq);
 		at.code.addBlock(at1.code);
 
 		s = new SymbolProcedure(t.image,at.parList,etiq);
@@ -643,6 +647,7 @@ void cabecera_funcion(Attributes at) :
 		
 		String etiq = CGUtils.newLabel();
 		at.code.addLabel(etiq);
+		System.out.println("ETIQUETA AÑADIDA: " + etiq);
 		at.code.addBlock(at1.code);
 
 		s = new SymbolFunction(t.image, at.parList, at1.type, etiq);
@@ -857,6 +862,7 @@ void inst_escribir(Attributes at):
 					}
 					at.code.addInst(OpCode.JMP, etiq_END);
 					at.code.addLabel(etiq_FALSE);
+					System.out.println("ETIQUETA AÑADIDA: " + etiq_FALSE);
 					// Si es false
 					String false_string = "false";
 					for (int i = 0; i < false_string.length(); i++) {
@@ -864,6 +870,7 @@ void inst_escribir(Attributes at):
 						at.code.addInst(OpCode.WRT, 0);
 					}
 					at.code.addLabel(etiq_END);
+					System.out.println("ETIQUETA AÑADIDA: " + etiq_END);
 				}
 			}
 		}
@@ -996,6 +1003,7 @@ void inst_escribir_linea(Attributes at):
 					}
 					at.code.addInst(OpCode.JMP, etiq_END);
 					at.code.addLabel(etiq_FALSE);
+					System.out.println("ETIQUETA AÑADIDA: " + etiq_FALSE);
 					// Si es false
 					String false_string = "false";
 					for (int i = 0; i < false_string.length(); i++) {
@@ -1003,6 +1011,7 @@ void inst_escribir_linea(Attributes at):
 						at.code.addInst(OpCode.WRT, 0);
 					}
 					at.code.addLabel(etiq_END);
+					System.out.println("ETIQUETA AÑADIDA: " + etiq_END);
 				}
 			}
 		}
@@ -1124,6 +1133,7 @@ void inst_if(Attributes at):
 		at.code.addBlock(at3.code);
 		at.code.addInst(OpCode.JMP, etiqFIN);
 		at.code.addLabel(etiqSINO);
+		System.out.println("ETIQUETA AÑADIDA: " + etiqSINO);
 	}
 	(<tELIF>  expresion(at2) 
 	{
@@ -1141,12 +1151,14 @@ void inst_if(Attributes at):
 		at.code.addInst(OpCode.JMP, etiqFIN);
 		at4.code = new CodeBlock();
 		at.code.addLabel(etiqSINO2);
+		System.out.println("ETIQUETA AÑADIDA: " + etiqSINO2);
 	})*
 	(<tELSE> instrucciones_return(at5) {
 		at.code.addBlock(at5.code);}
 	)?
 	<tEND> <tIF> {
 		at.code.addLabel(etiqFIN);
+		System.out.println("ETIQUETA AÑADIDA: " + etiqFIN);
 	}
 	
 }
@@ -1162,6 +1174,7 @@ void inst_while(Attributes at):
 	<tWHILE> {
 		String etiqExp = CGUtils.newLabel();
 		at.code.addLabel(etiqExp);
+		System.out.println("ETIQUETA AÑADIDA: " + etiqExp);
 	}
 	expresion(at1) {
 		if (at1type == Symbol.Types.BOOL) {
@@ -1176,6 +1189,7 @@ void inst_while(Attributes at):
 	<tEND> <tLOOP> {
 		at.code.addInst(OpCode.JMP, etiqExp);
 		at.code.addLabel(etiqFin);
+		System.out.println("ETIQUETA AÑADIDA: " + etiqFin);
 	}
 }
 
@@ -1257,6 +1271,7 @@ void inst_asercion(Attributes at):
 
 		at.code.addInst(OpCode.LVP);
 		at.code.addLabel(etiq_OK);
+		System.out.println("ETIQUETA AÑADIDA: " + etiq_OK);
 	}
 }
 
@@ -1301,7 +1316,12 @@ void instrucciones(Attributes at) :
 	Attributes at1 = new Attributes();
 }
 {
-	(instruccion(at1) {at.code.addBlock(at1.code);} <tPUNTOCOMA>)+
+	(instruccion(at1) 
+	{
+		at.code.addBlock(at1.code);
+		at1.code = new CodeBlock();
+	} 
+	<tPUNTOCOMA>)+
 }
 
 void instrucciones_return(Attributes at) :
@@ -1309,7 +1329,12 @@ void instrucciones_return(Attributes at) :
 	Attributes at1 = new Attributes();
 }
 {
-	(instruccion_return(at1) {at.code.addBlock(at1.code);} <tPUNTOCOMA>)+
+	(instruccion_return(at1)
+	{
+		at.code.addBlock(at1.code);
+		at1.code = new CodeBlock();
+	} 
+	<tPUNTOCOMA>)+
 }
 
 
