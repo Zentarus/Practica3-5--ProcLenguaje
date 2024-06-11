@@ -6,6 +6,7 @@ import lib.tools.codeGeneration.*;
 
 public class Attributes implements Cloneable {
     public Symbol.Types type;
+    public String const_value;
     public Symbol.ParameterClass parClass;
     public ArrayList<Symbol> parList;
     public ArrayList<Integer> intList;
@@ -23,6 +24,7 @@ public class Attributes implements Cloneable {
         isVecComp = false;
         isConst = false;
         name = "";
+        const_value = ""; // En caso de que sea char, string, int, nos guardamos su valor como t.image
         code = new CodeBlock();
         // Completar y añadirlos al toString
     }

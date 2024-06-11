@@ -1,0 +1,29 @@
+  ENP L0
+L0:
+  STC 72
+  WRT  0
+  STC 101
+  WRT  0
+  STC 108
+  WRT  0
+  STC 108
+  WRT  0
+  STC 111
+  WRT  0
+  STC 32
+  WRT  0
+  STC 87
+  WRT  0
+  STC 111
+  WRT  0
+  STC 114
+  WRT  0
+  STC 108
+  WRT  0
+  STC 100
+  WRT  0
+  STC 33
+  WRT  0
+  STC 10
+  WRT  0
+  LVP

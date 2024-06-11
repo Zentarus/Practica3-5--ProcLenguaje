@@ -201,7 +201,7 @@ public interface alikeConstants {
     "\"end\"",
     "\"return\"",
     "\"assert:\"",
-    "\"pre:\"",
+    "<tPRE>",
     "\"skip_line\"",
     "\"put\"",
     "\"put_line\"",
