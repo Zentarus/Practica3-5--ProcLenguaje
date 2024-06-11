@@ -1,0 +1,8 @@
+Error en la funcion/procedimiento : no se cumple la precondicion
+Este programa pide un número positivo n y calcula fib(n) con la fórmula recursiva fib(n) = fib(n-1) + fib(n-2)
+
+Error en la linea 13: "n tiene que ser mayo a 2"
+fib(1) = 1
+fib(2) = 1
+fib(
+
