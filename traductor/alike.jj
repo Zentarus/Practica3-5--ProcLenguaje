@@ -293,7 +293,9 @@ void Programa(Attributes at) :
 {
 	Token t;
 	Attributes at1 = new Attributes();
-	
+	Attributes at2 = new Attributes();
+	String etiqINI_PROGRAM = CGUtils.newLabel();
+	Boolean aparece_pre = false;
 }
 {
 	<tPROCEDURE>
@@ -308,14 +310,24 @@ void Programa(Attributes at) :
 			ErrorSemantico.deteccion(e, t.image);
 		}
 		// ------------------------------------------------
-		String etiqINI_PROGRAM = CGUtils.newLabel();
 		at.code.addInst(OpCode.ENP, etiqINI_PROGRAM);
 	}
 	
 	<tIS>
+	(precondicion(at2) { 
+		at.code.addLabel(etiqINI_PROGRAM); 
+		at.code.addBlock(at2.code); 
+		aparece_pre = true; // Pequeño arreglo para evitar doble definición de comienzo de programa
+	})? // Con interrogante para que acepte la demás batería de test
+
 	( declaracion_variables() )?
 	( declaracion_procs_funcs(at) )?
-	<tBEGIN> {at.code.addLabel(etiqINI_PROGRAM);}
+	<tBEGIN> {
+		if(!aparece_pre){
+			// Si no ha aparece pre, hay que añadir la etiqueta de inicio de programa aquí
+			at.code.addLabel(etiqINI_PROGRAM);
+		}
+	}
 	instrucciones(at1) {at.code.addBlock(at1.code);}
 	<tEND>
 	<tPUNTOCOMA>
@@ -764,6 +776,13 @@ void inst_escribir(Attributes at):
 					at.code.addInst(OpCode.STC, (int) msg.charAt(0));
 					at.code.addInst(OpCode.WRT, 0);
 				}
+				else if(att.name == "CONST_INT"){
+					// Se trata del caso de una llamada a la función int2char
+					// En att.const_value tendremos el caracter correspondiente al valor entero que queremos convertir a char
+					at.code.addInst(OpCode.STC, Integer.parseInt(att.const_value));
+					at.code.addInst(OpCode.WRT, 0);
+
+				}
 				else { // Es una variable
 
 					Symbol s = null;
@@ -889,7 +908,6 @@ void inst_escribir_linea(Attributes at):
 				}	
 			}
 			else if (att.type == Symbol.Types.CHAR) {
-
 				// Caso de que sea constante
 				if(att.name == "CONST_CHAR"){
 					// Eliminar primer y ultimo caracter de att.const_value, que son las comillas.
@@ -898,6 +916,13 @@ void inst_escribir_linea(Attributes at):
 					// Al ser 1 sólo caracter, no hace falta recorrerlo
 					at.code.addInst(OpCode.STC, (int) msg.charAt(0));
 					at.code.addInst(OpCode.WRT, 0);
+				}
+				else if(att.name == "CONST_INT"){
+					// Se trata del caso de una llamada a la función int2char
+					// En att.const_value tendremos el caracter correspondiente al valor entero que queremos convertir a char
+					at.code.addInst(OpCode.STC, Integer.parseInt(att.const_value));
+					at.code.addInst(OpCode.WRT, 0);
+
 				}
 				else { // Es una variable
 
@@ -916,7 +941,6 @@ void inst_escribir_linea(Attributes at):
 				
 			}
 			else if (att.type == Symbol.Types.STRING) {
-
 				// No tenemos variables string, solo constantes
 
 				// Eliminar primer y ultimo caracter de att.const_value, que son las comillas.
@@ -930,7 +954,6 @@ void inst_escribir_linea(Attributes at):
 			}
 
 			else if (att.type == Symbol.Types.BOOL) {
-
 				if (att.name == "TRUE") {
 					// Escribimos la palabra "true":
 					String true_string = "true";
