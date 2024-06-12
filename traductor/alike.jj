@@ -1040,6 +1040,7 @@ void inst_invocacion_o_asignacion(Attributes at):
 {	// o componente de vector, o <tID> (cambiarlo por expresion), o procedimiento (con y sin parametros)
 	expresion(at1) {
 		at.code = at1.code;
+		at.code.removeLastInst();
 		try {
 			Symbol s = st.getSymbol(at1.name);
 			if ((s instanceof SymbolProcedure) && (((SymbolProcedure) s).principal)) {
@@ -1113,6 +1114,7 @@ void inst_invocacion_o_asignacion(Attributes at):
 		// ---------------------- GENERACION DE CODIGO ------------------------------
 		//at.code.addBlock(at1.code);
 		at.code.addBlock(at2.code);
+		//at.code.addInst(OpCode.DRF);
 		at.code.addInst(OpCode.ASG);
 	 } 
 	) ? 
@@ -1432,6 +1434,7 @@ void lista_una_o_mas_exps(ArrayList<Attributes> ats):
 		 expresion(at2)
 		 { 
 			ats.add(at2);
+			at2 = new Attributes();
 		 }
 	)*
 }
