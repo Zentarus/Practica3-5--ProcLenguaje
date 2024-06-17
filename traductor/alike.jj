@@ -315,12 +315,12 @@ void Programa(Attributes at) :
 	}
 	
 	<tIS>
-	(precondicion(at2) { 
+	precondicion(at2) { 
 		at.code.addLabel(etiqINI_PROGRAM); 
 		System.out.println(ANSI_YELLOW + "ETIQUETA AÑADIDA: " + etiqINI_PROGRAM + ANSI_RESET);
 		at.code.addBlock(at2.code); 
 		aparece_pre = true; // Pequeño arreglo para evitar doble definición de comienzo de programa
-	})? 					// Con interrogante para que acepte la demás batería de test
+	}
 
 	( declaracion_variables() )?
 	( declaracion_procs_funcs(at) )?
@@ -364,9 +364,7 @@ void declaracion_func(Attributes at):
 {
 	cabecera_funcion(at1)
 	{at2.name = at1.name;}
-	(precondicion(at2))? // Lo ponemos con el interrogante para que acepte la batería de test, según lo especificado en el correo
-						 // se entiende que las funciones y procedimientos siempre deben tener la precondición, por lo que simplemente
-						 // deberíamos quitar el interrogante. Lo mismo en 'declaracion_proc'
+	precondicion(at2)
 	( declaracion_variables() )? 
 	( declaracion_proc_func(at3) )*
 	<tBEGIN>
@@ -391,9 +389,7 @@ void declaracion_proc(Attributes at):
 {
 	cabecera_procedimiento(at1)
 	{at2.name = at1.name;}
-	(precondicion(at2))? // Lo ponemos con el interrogante para que acepte la batería de test, según lo especificado en el correo
-						 // se entiende que las funciones y procedimientos siempre deben tener la precondición, por lo que simplemente
-						 // deberíamos quitar el interrogante. Lo mismo en 'declaracion_func'
+	precondicion(at2)
 	( declaracion_variables() )?
 	( declaracion_proc_func(at3) )*
 	<tBEGIN>
